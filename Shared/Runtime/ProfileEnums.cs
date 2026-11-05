@@ -62,7 +62,7 @@ namespace HaloVision.Shared
         //Protanopia: Color palette for those with protanopia; avoids red colors
         //Deuteranopia: Color palette for those with deuteranopia; avoids green colors
         //Tritanopia: Color palette for those with tritanopia; avoids blue colors
-    public enum ColorPallette
+    public enum ColorPalette
     {
         Standard, Protanopia, Deuteranopia, Tritanopia
     }

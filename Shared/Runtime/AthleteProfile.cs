@@ -1,12 +1,15 @@
 using System;
 
-namespace Halo_Vision.Shared.Runtime
+namespace HaloVision.Shared
 {
      // The guide edits it on the web app; the headset keeps a copy for offline runs.
     public class AthleteProfile
     {
+        //On average, a persons's eyes are at 93% of their body height. 
+        public const float EyeHeightRatio = 0.93f; // The headset uses this to estimate eye height from total height.
+
         // Unique identifier for the athlete profile.
-        public string ProfileId { get; set; }
+        public int ProfileID { get; set; }
 
         // Name of the athlete.
         public string Name { get; set; } = "";
@@ -21,9 +24,12 @@ namespace Halo_Vision.Shared.Runtime
         public AffectedEye AffectedEye { get; set; } = AffectedEye.Both;
 
         //Height of the athlete in meters, defaulting to 1.6 meters.
-        //The headset uses this to determine the distance of the path edges. 
+        //The headset needs eye height instead, so use GetEyeHeight() for distance math. 
         public float Height { get; set; } = 1.6f;
 
+        //Estimated height of the athlete'seyes above the ground in meters.
+        //The headset uses this to determine the distance of the path edges.
+        public float EyeHeight() { return Height * EyeHeightRatio; }
         //Skill level of the athlete, defaulting to Beginner.
         public SkillLevel SkillLevel { get; set; } = SkillLevel.Beginner;
 

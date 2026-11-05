@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <!-- Build for .NET 10-->
+    <TargetFramework>net10.0</TargetFramework>
+
+    <!-- Enable warnings when something might be null on accident -->
+    <Nullable>enable</Nullable>
+
+    <!-- Enable implicit using statements -->
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Also compile the HaloVision.Shared files that the headset uses.-->
+    <Compile Include="../../../Shared/Runtime/**/*.cs" />  </ItemGroup>
+</Project>

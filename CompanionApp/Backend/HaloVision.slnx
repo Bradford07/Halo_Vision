@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="HaloVision.Api.Tests/HaloVision.Api.Tests.csproj" />
+  <Project Path="HaloVision.Api/HaloVision.Api.csproj" />
+</Solution>
