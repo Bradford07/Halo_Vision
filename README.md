@@ -1,86 +1,109 @@
 # Halo Vision
 
-**An Augmented Reality Assistance System for Visually Impaired Skiers**
+**An augmented reality assistance system for low-vision athletes on paths and trails**
+
+> **Before you push anything, read [CONTRIBUTING.md](CONTRIBUTING.md).**
 
 ## Overview
 
-Halo Vision is a capstone project exploring the use of augmented reality (AR) to help people with visual impairments navigate outdoor trails with greater awareness and independence.
+Halo Vision is a University of Nevada, Reno capstone project that uses augmented reality to help
+low-vision athletes walk and jog on paths and trails with more independence. A Microsoft HoloLens 2
+finds the path in each camera frame, draws its edges as a high-contrast outline, adds optional
+spatial audio, and warns the athlete when it is unsure of the path.
 
-The project targets adaptive skiing, with the goal of making trail information easier to perceive through alternative visual representations and other sensory feedback. Halo Vision is designed to **supplement trained human guides, not replace them**.
+The project began with adaptive skiing. Level 1 focuses on paved paths and dirt trails; snow and
+skiing are planned for Level 2. Halo Vision is designed to **supplement trained human guides, not
+replace them**.
 
-The application is being developed for Microsoft HoloLens 2 using Unity. The initial prototype establishes the development environment and tests deployment to the headset. Future development will investigate live camera-based terrain visualization, image enhancement, and methods for communicating trail direction and boundaries.
+## How it works
 
-## Project Goals
+| Part | What it does |
+| --- | --- |
+| **Headset app** (HoloLens 2) | Draws the path outline and plays audio cues. Keeps the athlete's profile so it works on a trail with no network. |
+| **Guide's web app** (phone browser) | The sighted guide signs in, creates athlete profiles, and pairs a headset. |
+| **Backend** (server) | Stores guides, headsets and athlete profiles, and syncs profiles with the headset over Wi-Fi at the base. |
+| **HaloVision.Shared** | C# classes, such as `AthleteProfile`, compiled by both the headset and the backend so they always agree on the data format. |
 
-- Investigate the feasibility of using HoloLens 2 for adaptive outdoor navigation.
-- Explore live camera-based terrain visualization for users who have difficulty seeing the surrounding environment.
-- Investigate image-processing and machine-learning techniques for distinguishing traversable trail from surrounding terrain.
-- Explore accessible guidance methods, including high-contrast visual displays and nonvisual feedback.
-- Evaluate the technical constraints of real-time camera processing and augmented reality on HoloLens 2.
+Our P3 design used a native phone app and Bluetooth. We replaced it with a web app and a backend,
+because a web browser cannot host the Bluetooth service the headset connects to.
 
-## Technology Stack
+## Technology stack
 
-- **Unity** — application development and scene creation.
-- **C#** — application scripting.
-- **Microsoft HoloLens 2** — target augmented reality hardware.
-- **OpenXR** — XR runtime and interaction support.
-- **Visual Studio 2022** — building and deploying the application.
-- **Git and GitHub** — source control and collaboration.
+| Part | Technologies |
+| --- | --- |
+| Headset app | Unity 2022.3.62f2, C#, OpenXR, UWP with IL2CPP, Visual Studio 2022 |
+| Guide's web app | React, Vite, TypeScript (planned) |
+| Backend | ASP.NET Core on .NET 10, EF Core with SQLite, ASP.NET Core Identity |
+| Shared library | HaloVision.Shared: C# 9 and .NET Standard 2.1, packaged as a Unity local package |
+| Tests | xUnit |
+| Collaboration | Git and GitHub (see [CONTRIBUTING.md](CONTRIBUTING.md)) |
 
-## Current Development Status
+> **The Unity version is locked at 2022.3.62f2.** It is the only version that runs on our HoloLens 2.
+> Do not upgrade it.
 
-The project is in its initial prototyping stage.
+## Current status
 
-**Implemented**
-- Unity project configured for Universal Windows Platform (UWP).
-- OpenXR configured for the HoloLens 2 development workflow.
-- Basic Hello World scene created.
-- Prototype successfully built, deployed, and launched on the HoloLens 2.
-- Initial text sizing adjusted to improve visibility in the headset.
+**Done**
+- Unity project configured for UWP and OpenXR, with a Hello World scene built, deployed, and launched
+  on the HoloLens 2.
+
+**In progress** (`backend-setup` branch)
+- `HaloVision.Shared` with `AthleteProfile` and its enums, using the field names from our P3 design.
+- ASP.NET Core backend with a `GET /health` endpoint.
 
 **Planned**
-- Access and display the HoloLens 2 camera feed.
-- Create a head-locked terrain-view panel.
-- Investigate image enhancement techniques for improved visibility.
-- Explore trail segmentation and traversability classification.
-- Investigate spatial audio and other accessible feedback methods.
-- Evaluate performance, latency, and usability.
+- Backend: SQLite database, headset pairing, profile sync, test-log upload, and model info.
+- Guide's web app: login, athlete list, profile editor, and pairing screens.
+- Headset: camera feed, path segmentation, path outline, uncertainty warning, and spatial audio.
+- Performance, latency, and usability testing.
 
-These planned features have not yet been implemented and will be evaluated as development progresses.
-
-## Development Environment
-
-The current development setup uses:
-
-- Windows 11
-- Unity 2022.3
-- Visual Studio 2022 Community
-- Microsoft HoloLens 2
-- OpenXR Plugin for Unity
-
-Exact package versions and configuration details may change as the project develops.
-
-## Repository Structure
+## Repository structure
 
 ```text
-CS425_Capstone/
-├── Assets/          # Scenes, scripts, and project assets
-├── Packages/        # Unity package manifest and dependencies
-├── ProjectSettings/  # Unity project configuration
-├── .gitignore        # Files excluded from version control
-└── README.md         # Project documentation
+Halo_Vision/
+├── Headset/            # Unity project for the HoloLens 2 app
+├── Shared/             # HaloVision.Shared: C# classes used by the headset and backend
+├── CompanionApp/
+│   └── Backend/        # ASP.NET Core backend (.NET 10)
+├── CONTRIBUTING.md     # Team git rules: everyone must follow these
+├── .gitignore
+└── README.md
 ```
 
-Unity-generated folders and build outputs are excluded from version control where appropriate.
+## Getting started
 
-## Safety and Intended Use
+**Headset:** open `Headset/` in Unity 2022.3.62f2, then build for UWP and deploy with Visual Studio 2022.
 
-Halo Vision is an experimental accessibility project. It is not a certified navigation or safety system. Any future trail guidance must be evaluated carefully for reliability, latency, environmental conditions, and usability before real-world use. The project is intended to support adaptive-sports participants and trained guides, not replace established safety practices or human supervision.
+**Backend:** install the .NET 10 SDK, then from `CompanionApp/Backend`:
 
-## Project Team
+```bash
+dotnet build
+dotnet run --project HaloVision.Api
+```
 
-This project is being developed as part of a university capstone. Team roles, advisors, and acknowledgments can be added here as the project progresses.
+Open `http://localhost:5233/health`. You should see `{"status":"ok"}`.
+
+## Safety, privacy, and intended use
+
+Halo Vision is an experimental accessibility project, not a certified navigation or safety system.
+
+- A sighted spotter stays with the tester on every outdoor test.
+- Level 1 live tests are walking and jogging only, starting on flat paved paths.
+- Team members test first, before any low-vision athlete does.
+- Before any test with visually impaired participants, the team confirms with the instructor whether
+  university human-subjects review is required.
+- Guidance builds never store camera frames. Test logs identify participants only by codes like
+  "P03", never by name.
+
+## Project team
+
+**Team 14 OPCC:** Owen Cespon, Cal Peters, Connor James, Paris Acosta
+
+**Instructors:** Erin Keith and Zach Estreito
+
+**External advisor:** Monica Nicolescu, University of Nevada, Reno
 
 ## License
 
-No license has been specified yet. Unless a license is added, the repository should not be assumed to grant others permission to reuse or redistribute its contents.
+No license has been specified yet. Unless a license is added, the repository should not be assumed to
+grant others permission to reuse or redistribute its contents.
