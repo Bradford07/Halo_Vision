@@ -487,3 +487,10 @@ $RECYCLE.BIN/
 *.db
 *.db-shm
 *.db-wal
+
+
+# The repo's top-level .gitignore (made for Unity) hides project files.
+# Ours are hand-written, so keep them.
+!*.csproj
+!*.sln
+!*.slnx
