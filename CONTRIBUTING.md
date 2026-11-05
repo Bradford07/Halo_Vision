@@ -49,6 +49,41 @@ Fix them on **your** branch, never on `main`:
 Resolve the conflicts in VS Code, make sure it still builds, then commit and push.
 The pull request updates automatically.
 
+## Large features (e.g. the segmentation model)
+
+**First, try to split it into small pieces** that each work on their own and can be
+merged into `main` separately. For example, segmentation can be split by our P3 classes:
+
+1. `feature/sensor-capture`: camera frames (`SensorCapture`)
+2. `feature/load-model`: load the model (`TrailPerception.loadModel()`)
+3. `feature/segment-test-image`: run `segment()` on a saved trail photo, in a test
+4. `feature/find-edges`: `findEdges()` on saved masks
+5. `feature/render-path`: connect it all to `CueRenderer`
+
+If a piece is merged but not ready to show, keep it switched off with a setting
+(for example `useSegmentation = false`) until the last piece is done.
+
+**If the work can't be split, or is an experiment that might not work out** (like trying
+different models), use one umbrella branch, such as `feature/segmentation`:
+
+- Make smaller branches from it and open pull requests **into the umbrella branch**.
+  These still need 1 approval.
+- **Pull `main` into the umbrella branch at least twice a week**, so it never falls far behind:
+
+      git switch feature/segmentation
+      git pull origin main
+
+- When it works on the headset, open **one** pull request from the umbrella branch into `main`.
+- If the experiment fails, delete the branch. `main` was never affected.
+
+## Large files (models, datasets, videos)
+
+- **Never commit a file over 50 MB.** GitHub rejects files over 100 MB, and every
+  version of a big file stays in the repo history forever, which makes cloning slow.
+- **Do not commit trained models (`.onnx`, Sentis files), datasets, or training videos**
+  until the team agrees on where they live (Git LFS or shared storage).
+- Training footage must never include anyone who has not given consent.
+
 ## Milestones and demos (P4, P5, ...)
 
 1. **Code freeze:** nothing gets merged into `main` in the 24 hours before a demo
