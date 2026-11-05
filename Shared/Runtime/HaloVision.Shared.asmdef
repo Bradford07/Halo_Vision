@@ -1,0 +1,5 @@
+{
+  "name": "HaloVision.Shared",
+  "rootNamespace": "HaloVision.Shared",
+  "noEngineReferences": true
+}
