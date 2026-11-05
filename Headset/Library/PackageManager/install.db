@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "packages": {
+    "com.microsoft.mixedreality.openxr": {
+      "tarball": {
+        "hash": "42041f7dc068",
+        "mtime": 1792807796083,
+        "size": 10827883,
+        "localPath": "C:\\Users\\peter\\OneDrive\\Documents\\GitHub\\CS425_Capstone\\Headset\\Packages\\MixedReality\\com.microsoft.mixedreality.openxr-1.11.2.tgz"
+      }
+    }
+  }
+}
