@@ -1,0 +1,6 @@
+{
+  "name": "com.team14.halovision.shared",
+  "version": "0.1.0",
+  "displayName": "HaloVision.Shared",
+  "description": "Athlete profile and message classes shared by the Halo Vision headset and backend."
+}
