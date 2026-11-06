@@ -1,0 +1,70 @@
+// Written with Claude Code, reviewed by Owen Cespon
+using HaloVision.Api.Data;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+
+namespace HaloVision.Api.Tests;
+
+// Starts the whole backend in memory for a test, with its own empty in-memory SQLite database.
+// Every test that needs the API or the database creates one of these:
+//
+//     using var factory = new TestAppFactory();
+//     var client = factory.CreateClient();
+//
+// Each factory gets a brand-new database, so tests never see each other's data.
+public class TestAppFactory : WebApplicationFactory<Program>
+{
+    // A unique name, so every factory gets its own in-memory database.
+    private readonly string _connectionString =
+        $"Data Source=HaloVisionTest-{Guid.NewGuid()};Mode=Memory;Cache=Shared";
+
+    // An in-memory SQLite database disappears when its last connection closes.
+    // We keep this one connection open for the whole test so the data stays alive.
+    private readonly SqliteConnection _keepAlive;
+
+    public TestAppFactory()
+    {
+        _keepAlive = new SqliteConnection(_connectionString);
+        _keepAlive.Open();
+    }
+
+    protected override void ConfigureWebHost(IWebHostBuilder builder)
+    {
+        // "Testing" is not "Development", so Program.cs skips the fake-data seeder.
+        builder.UseEnvironment("Testing");
+
+        // Point the app at our in-memory database instead of halovision.db.
+        builder.UseSetting("ConnectionStrings:Default", _connectionString);
+    }
+
+    protected override IHost CreateHost(IHostBuilder builder)
+    {
+        var host = base.CreateHost(builder);
+
+        // Build the tables by running the real migrations, which also proves the migrations work.
+        using var scope = host.Services.CreateScope();
+        scope.ServiceProvider.GetRequiredService<AppDbContext>().Database.Migrate();
+
+        return host;
+    }
+
+    // Gives a test direct access to the database, for setting up data and checking results.
+    // Dispose the scope when you're done: using var scope = factory.Services.CreateScope();
+    public AppDbContext GetDb(IServiceScope scope)
+    {
+        return scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        base.Dispose(disposing);
+        if (disposing)
+        {
+            _keepAlive.Dispose();
+        }
+    }
+}
