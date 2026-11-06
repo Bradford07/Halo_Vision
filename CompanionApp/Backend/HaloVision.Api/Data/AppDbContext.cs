@@ -54,6 +54,11 @@ public class AppDbContext : IdentityDbContext<IdentityUser>
             // no row matches and EF throws, so two saves can never silently overwrite each other (step 4).
             profile.Property(p => p.Version).IsConcurrencyToken();
 
+            // SQLite stores dates as plain text with no time zone. We always save UTC, so mark
+            // values read back as UTC too; then the JSON says "...Z" and the headset knows it's UTC.
+            profile.Property(p => p.UpdatedAt)
+                .HasConversion(v => v, v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
+
             // Store enums as text ("Peripheral") instead of numbers (1), so the database is readable
             // and reordering an enum later can't silently change saved data.
             profile.Property(p => p.VisionLossType).HasConversion<string>();
