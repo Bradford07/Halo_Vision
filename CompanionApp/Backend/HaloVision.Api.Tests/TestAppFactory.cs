@@ -1,4 +1,7 @@
 // Written with Claude Code, reviewed by Owen Cespon
+using System.Net.Http.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using HaloVision.Api.Data;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -50,6 +53,30 @@ public class TestAppFactory : WebApplicationFactory<Program>
         scope.ServiceProvider.GetRequiredService<AppDbContext>().Database.Migrate();
 
         return host;
+    }
+
+    // The same JSON settings the API uses (camelCase names, enums as text),
+    // so tests send and read JSON exactly like the web app and headset will.
+    public static readonly JsonSerializerOptions Json = new(JsonSerializerDefaults.Web)
+    {
+        Converters = { new JsonStringEnumConverter() },
+    };
+
+    // Creates a new guide account, signs it in, and returns an HttpClient that carries
+    // that guide's login cookie. Each call gets its own client, so two guides never mix up.
+    public async Task<HttpClient> CreateGuideClientAsync(string email)
+    {
+        const string password = "Test-Password1!";
+        var client = CreateClient();
+
+        var register = await client.PostAsJsonAsync("/api/auth/register", new { email, password });
+        register.EnsureSuccessStatusCode();
+
+        // useCookies=true: sign in with a cookie (what the web app uses) instead of a token.
+        var login = await client.PostAsJsonAsync("/api/auth/login?useCookies=true", new { email, password });
+        login.EnsureSuccessStatusCode();
+
+        return client;
     }
 
     // Gives a test direct access to the database, for setting up data and checking results.

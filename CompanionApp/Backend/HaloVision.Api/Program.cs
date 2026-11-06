@@ -1,4 +1,7 @@
+using System.Text.Json.Serialization;
+using HaloVision.Api;
 using HaloVision.Api.Data;
+using HaloVision.Api.Features.Athletes;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,10 +13,38 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("Default")));
 
-//Register guide accounts (ASP.NET Core Identity), stored in our database.
-//The login endpoints themselves are added in the athletes step.
-builder.Services.AddIdentityCore<IdentityUser>()
+//Register guide accounts (ASP.NET Core Identity), stored in our database,
+//plus the ready-made register/login endpoints that MapIdentityApi adds below.
+builder.Services.AddIdentityApiEndpoints<IdentityUser>()
     .AddEntityFrameworkStores<AppDbContext>();
+
+//Guides stay signed in with a cookie. This is an API, not a website with a login page,
+//so when someone isn't signed in we answer 401/403 instead of redirecting to a login page.
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Events.OnRedirectToLogin = context =>
+    {
+        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+        return Task.CompletedTask;
+    };
+    options.Events.OnRedirectToAccessDenied = context =>
+    {
+        context.Response.StatusCode = StatusCodes.Status403Forbidden;
+        return Task.CompletedTask;
+    };
+});
+
+//"Guide" policy: the request must come from a guide signed in with the Identity cookie.
+//Naming the scheme on purpose means a headset token can never count as a guide login.
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy(AuthPolicies.Guide, policy => policy
+        .AddAuthenticationSchemes(IdentityConstants.ApplicationScheme)
+        .RequireAuthenticatedUser());
+
+//JSON settings for every endpoint: property names in camelCase (the default for web APIs)
+//and enums as text ("Peripheral") instead of numbers, matching the database and the headset.
+builder.Services.ConfigureHttpJsonOptions(options =>
+    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
 //Build the app from that setup.
 var app = builder.Build();
@@ -25,8 +56,26 @@ if (app.Environment.IsDevelopment())
     await DevDataSeeder.SeedAsync(scope.ServiceProvider);
 }
 
+//Check who is calling (authentication), then whether they're allowed (authorization).
+app.UseAuthentication();
+app.UseAuthorization();
+
 //Endpoint that answers "server is running".
 app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
+
+//Guide accounts: POST /api/auth/register, POST /api/auth/login?useCookies=true, and more.
+var auth = app.MapGroup("/api/auth");
+auth.MapIdentityApi<IdentityUser>();
+
+//MapIdentityApi has no logout, so we add one: it clears the guide's login cookie.
+auth.MapPost("/logout", async (SignInManager<IdentityUser> signInManager) =>
+{
+    await signInManager.SignOutAsync();
+    return Results.NoContent();
+}).RequireAuthorization(AuthPolicies.Guide);
+
+//The guide's athlete profiles (P3's ProfileManager).
+app.MapAthleteEndpoints();
 
 //Start the serer and keep it running until the user stops it.
 app.Run();
