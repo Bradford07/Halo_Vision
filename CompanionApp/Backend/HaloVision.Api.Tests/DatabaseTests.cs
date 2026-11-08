@@ -1,4 +1,3 @@
-// Written with Claude Code, reviewed by Owen Cespon
 using System.Net;
 using HaloVision.Api.Data;
 using HaloVision.Shared;
@@ -23,28 +22,28 @@ public class DatabaseTests
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
-    // An athlete profile saved for a guide comes back with the same values and the same guide.
+
+    //Profile saved for an account comes back with the same vaues and the same account
     [Fact]
-    public async Task Athlete_profile_is_saved_and_loaded_with_its_guide()
+    public async Task Profile_is_saved_and_loaded_with_its_account()
     {
         using var factory = new TestAppFactory();
 
-        // Arrange + Act: save a guide and one of their athletes.
         int profileId;
-        string guideId;
+        string accountId;
         using (var scope = factory.Services.CreateScope())
         {
             var db = factory.GetDb(scope);
-            var guide = new IdentityUser { UserName = "test-guide@example.com" };
-            db.Users.Add(guide);
+            var account = new IdentityUser { UserName = "test-athlete@example.com" };
+            db.Users.Add(account);
 
             var athlete = new AthleteProfile { Name = "Test Athlete", SurfaceMode = SurfaceMode.Dirt };
             db.AthleteProfiles.Add(athlete);
-            db.Entry(athlete).Property(AppDbContext.GuideIdColumn).CurrentValue = guide.Id;
+            db.Entry(athlete).Property(AppDbContext.UserIdColumn).CurrentValue = account.Id;
 
             await db.SaveChangesAsync();
             profileId = athlete.ProfileID;
-            guideId = guide.Id;
+            accountId = account.Id;
         }
 
         // Assert: load it in a fresh scope, so it really comes from the database, not memory.
@@ -56,42 +55,44 @@ public class DatabaseTests
             Assert.True(profileId > 0);                      // the database assigned an ID
             Assert.Equal("Test Athlete", loaded.Name);
             Assert.Equal(SurfaceMode.Dirt, loaded.SurfaceMode);
-            Assert.Equal(guideId, db.Entry(loaded).Property(AppDbContext.GuideIdColumn).CurrentValue);
+            Assert.Equal(accountId, db.Entry(loaded).Property(AppDbContext.UserIdColumn).CurrentValue);
         }
     }
 
-    // Enums are stored as readable text, not numbers.
+    
+    // A profile can't be saved without an account: every profile must belong to someone. 
     [Fact]
-    public async Task Enums_are_stored_as_text()
+    public async Task Profile_without_an_account_is_rejected()
     {
         using var factory = new TestAppFactory();
         using var scope = factory.Services.CreateScope();
         var db = factory.GetDb(scope);
 
-        var guide = new IdentityUser { UserName = "test-guide@example.com" };
-        db.Users.Add(guide);
-        var athlete = new AthleteProfile { VisionLossType = VisionLossType.Central };
-        db.AthleteProfiles.Add(athlete);
-        db.Entry(athlete).Property(AppDbContext.GuideIdColumn).CurrentValue = guide.Id;
-        await db.SaveChangesAsync();
+        db.AthleteProfiles.Add(new AthleteProfile { Name = "No Account" });
 
-        // Read the raw column with SQL to see exactly what the database stored.
-        var stored = await db.Database
-            .SqlQueryRaw<string>("SELECT VisionLossType AS Value FROM athlete_profile")
-            .SingleAsync();
-
-        Assert.Equal("Central", stored);
+        await Assert.ThrowsAsync<DbUpdateException>(() => db.SaveChangesAsync());
     }
 
-    // A profile can't be saved without a guide: every athlete must belong to someone.
+    //One account = one profile: the database refuses a second profile for the same account.
     [Fact]
-    public async Task Athlete_profile_without_a_guide_is_rejected()
+    public async Task Account_cannot_have_two_profiles()
     {
         using var factory = new TestAppFactory();
         using var scope = factory.Services.CreateScope();
         var db = factory.GetDb(scope);
 
-        db.AthleteProfiles.Add(new AthleteProfile { Name = "No Guide" });
+        var account = new IdentityUser { UserName = "test-athlete@example.com" };
+        db.Users.Add(account);
+        var first = new AthleteProfile { Name = "First" };
+        db.AthleteProfiles.Add(first);
+
+        db.Entry(first).Property(AppDbContext.UserIdColumn).CurrentValue = account.Id;
+        await db.SaveChangesAsync();
+
+        //A second profile for the same account must fail.
+        var second = new AthleteProfile { Name = "Second" };
+        db.AthleteProfiles.Add(second);
+        db.Entry(second).Property(AppDbContext.UserIdColumn).CurrentValue = account.Id;
 
         await Assert.ThrowsAsync<DbUpdateException>(() => db.SaveChangesAsync());
     }

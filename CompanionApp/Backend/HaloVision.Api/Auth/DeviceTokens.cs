@@ -1,4 +1,3 @@
-// Written with Claude Code, reviewed by Owen Cespon
 using System.Buffers.Text;
 using System.Security.Cryptography;
 using System.Text;

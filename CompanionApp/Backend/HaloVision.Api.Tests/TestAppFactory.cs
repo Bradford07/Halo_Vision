@@ -1,4 +1,3 @@
-// Written with Claude Code, reviewed by Owen Cespon
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -62,9 +61,9 @@ public class TestAppFactory : WebApplicationFactory<Program>
         Converters = { new JsonStringEnumConverter() },
     };
 
-    // Creates a new guide account, signs it in, and returns an HttpClient that carries
-    // that guide's login cookie. Each call gets its own client, so two guides never mix up.
-    public async Task<HttpClient> CreateGuideClientAsync(string email)
+    // Creates a new athlete account, signs it in, and returns an HttpClient that carries
+    // that athlete's login cookie. Each call gets its own client, so two athletes never mix up.
+    public async Task<HttpClient> CreateAthleteClientAsync(string email)
     {
         const string password = "Test-Password1!";
         var client = CreateClient();
@@ -79,21 +78,20 @@ public class TestAppFactory : WebApplicationFactory<Program>
         return client;
     }
 
-    // Creates an athlete for a signed-in guide through the API and returns what the server saved.
-    public static async Task<HaloVision.Shared.AthleteProfile> CreateAthleteAsync(HttpClient guide, string name)
+    //Saves the signed-in athletes ownprofile through the API and returns whatthe server saved
+    public static async Task<HaloVision.Shared.AthleteProfile> SaveProfileAsync(HttpClient athlete, string name)
     {
-        var response = await guide.PostAsJsonAsync(
-            "/api/athletes", new HaloVision.Shared.AthleteProfile { Name = name }, Json);
+        var response = await athlete.PutAsJsonAsync("/api/my-profile", new HaloVision.Shared.AthleteProfile { Name = name }, Json);
         response.EnsureSuccessStatusCode();
         return (await response.Content.ReadFromJsonAsync<HaloVision.Shared.AthleteProfile>(Json))!;
     }
 
-    // Pairs a new headset with the guide's athlete, the same way the real web app and headset will:
-    // the guide makes a code, then an anonymous client claims it.
+    // Pairs a new headset with the athlete's profile, the same way the real web app and headset will:
+    //The athlete makes a code, then an anonymous client claims it
     // Returns an HttpClient that sends the headset's token on every request.
-    public async Task<HttpClient> PairHeadsetAsync(HttpClient guide, int profileId)
+    public async Task<HttpClient> PairHeadsetAsync(HttpClient athlete)
     {
-        var codeResponse = await guide.PostAsJsonAsync("/api/pairing/codes", new { profileId });
+        var codeResponse = await athlete.PostAsync("/api/pairing/codes", null);
         codeResponse.EnsureSuccessStatusCode();
         var code = (await codeResponse.Content.ReadFromJsonAsync<CodeResult>(Json))!.Code;
 
