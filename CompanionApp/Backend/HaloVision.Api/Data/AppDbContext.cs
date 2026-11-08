@@ -27,6 +27,7 @@ public class AppDbContext : IdentityDbContext<IdentityUser>
 
     public DbSet<PairingCode> PairingCodes => Set<PairingCode>();
 
+    public DbSet<TestLog> TestLogs => Set<TestLog>();
     protected override void OnModelCreating(ModelBuilder builder)
     {
         //Identity sets up its own login tables
@@ -61,6 +62,15 @@ public class AppDbContext : IdentityDbContext<IdentityUser>
             code.ToTable("pairing_code");
             code.HasIndex(c => c.Code).IsUnique();
             code.HasOne<AthleteProfile>().WithMany().HasForeignKey(c => c.ProfileID);
+        });
+
+        // test_log: one field-test run. The headset picks the id, so the database must not.
+        builder.Entity<TestLog>(log =>
+        {
+            log.ToTable("test_log");
+            log.HasKey(l => l.Id);
+            log.Property(l => l.Id).ValueGeneratedNever();
+            log.HasOne<Device>().WithMany().HasForeignKey(l => l.DeviceId);
         });
     }
 
