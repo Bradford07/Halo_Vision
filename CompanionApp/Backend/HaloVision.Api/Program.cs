@@ -5,6 +5,7 @@ using HaloVision.Api.Data;
 using HaloVision.Api.Features.Athletes;
 using HaloVision.Api.Features.Devices;
 using HaloVision.Api.Features.Pairing;
+using HaloVision.Api.Features.Sync;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -92,6 +93,9 @@ app.MapMyProfileEndpoints();
 
 //Pairing an athlete's headset with their profile (replaces P3's Bluetooth pair()).
 app.MapPairingEndpoints();
+
+//Profile sync for a paired headset: download the latest copy and upload changes made on it
+app.MapProfileSyncEndpoints();
 
 //Endpoints a paired headset calls about itself.
 app.MapDeviceEndpoints();
