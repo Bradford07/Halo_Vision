@@ -79,6 +79,38 @@ public class TestAppFactory : WebApplicationFactory<Program>
         return client;
     }
 
+    // Creates an athlete for a signed-in guide through the API and returns what the server saved.
+    public static async Task<HaloVision.Shared.AthleteProfile> CreateAthleteAsync(HttpClient guide, string name)
+    {
+        var response = await guide.PostAsJsonAsync(
+            "/api/athletes", new HaloVision.Shared.AthleteProfile { Name = name }, Json);
+        response.EnsureSuccessStatusCode();
+        return (await response.Content.ReadFromJsonAsync<HaloVision.Shared.AthleteProfile>(Json))!;
+    }
+
+    // Pairs a new headset with the guide's athlete, the same way the real web app and headset will:
+    // the guide makes a code, then an anonymous client claims it.
+    // Returns an HttpClient that sends the headset's token on every request.
+    public async Task<HttpClient> PairHeadsetAsync(HttpClient guide, int profileId)
+    {
+        var codeResponse = await guide.PostAsJsonAsync("/api/pairing/codes", new { profileId });
+        codeResponse.EnsureSuccessStatusCode();
+        var code = (await codeResponse.Content.ReadFromJsonAsync<CodeResult>(Json))!.Code;
+
+        var headset = CreateClient();
+        var claimResponse = await headset.PostAsJsonAsync("/api/pairing/claim", new { code });
+        claimResponse.EnsureSuccessStatusCode();
+        var token = (await claimResponse.Content.ReadFromJsonAsync<ClaimResult>(Json))!.Token;
+
+        headset.DefaultRequestHeaders.Authorization =
+            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+        return headset;
+    }
+
+    // Shapes of the pairing responses, for reading them in tests.
+    public record CodeResult(string Code, DateTime ExpiresAt);
+    public record ClaimResult(string Token, int DeviceId, int ProfileId);
+
     // Gives a test direct access to the database, for setting up data and checking results.
     // Dispose the scope when you're done: using var scope = factory.Services.CreateScope();
     public AppDbContext GetDb(IServiceScope scope)

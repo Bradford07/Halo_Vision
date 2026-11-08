@@ -6,4 +6,7 @@ public static class AuthPolicies
 {
     // A guide signed in with the Identity login cookie (the phone web app).
     public const string Guide = "Guide";
+
+    // A paired headset logged in with its device token ("Authorization: Bearer <token>").
+    public const string Device = "Device";
 }
