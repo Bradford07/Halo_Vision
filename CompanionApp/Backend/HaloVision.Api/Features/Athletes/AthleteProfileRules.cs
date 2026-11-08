@@ -1,15 +1,14 @@
-// Written with Claude Code, reviewed by Owen Cespon
 using System.Text.RegularExpressions;
 using HaloVision.Shared;
 
 namespace HaloVision.Api.Features.Athletes;
 
-// Server-side rules for athlete profiles, shared by the guide endpoints (step 2)
+// Server-side rules for athlete profiles, shared by my-profile endpoints (phone)
 // and the headset sync endpoint (step 4) so both follow exactly the same rules.
 public static partial class AthleteProfileRules
 {
     // Copies every field a person can edit from "source" onto "target".
-    // ProfileID, Version, UpdatedAt and the guide link are NOT copied: the server controls those.
+    // ProfileID, Version, UpdatedAt and the account link are NOT copied: the server controls those.
     public static void CopyEditableFields(AthleteProfile source, AthleteProfile target)
     {
         target.Name = source.Name;

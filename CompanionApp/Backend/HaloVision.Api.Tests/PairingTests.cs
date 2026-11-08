@@ -1,4 +1,3 @@
-// Written with Claude Code, reviewed by Owen Cespon
 using System.Net;
 using System.Net.Http.Json;
 using HaloVision.Api.Auth;
@@ -12,23 +11,25 @@ namespace HaloVision.Api.Tests;
 // Tests for pairing a headset: POST /api/pairing/codes and POST /api/pairing/claim.
 public class PairingTests
 {
-    // Helper: a signed-in guide with one athlete, plus a fresh pairing code for that athlete.
-    private static async Task<(HttpClient Guide, int ProfileId, string Code)> GuideWithCodeAsync(TestAppFactory factory)
+    // Helper: a signed-in athlete with a saved profile, plus a fresh pariing code for that profile
+    private static async Task<(HttpClient Athlete, int ProfileId, string Code)>AthleteWithCodeAsync(TestAppFactory factory)
     {
-        var guide = await factory.CreateGuideClientAsync("guide-a@example.com");
-        var athlete = await CreateAthleteAsync(guide, "Athlete One");
-        var response = await guide.PostAsJsonAsync("/api/pairing/codes", new { profileId = athlete.ProfileID });
+        var athlete = await factory.CreateAthleteClientAsync("athlete-a@example.com");
+        var profile = await SaveProfileAsync(athlete, "Athlete One");
+        var response = await athlete.PostAsync("/api/pairing/codes", null);
+
+        //Test to ensure that code was created
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var code = (await response.Content.ReadFromJsonAsync<CodeResult>(Json))!.Code;
-        return (guide, athlete.ProfileID, code);
+        return (athlete, profile.ProfileID, code);
     }
 
-    // REQUIRED (P4 table): a valid code works once.
+    //a valid code works once.
     [Fact]
     public async Task Valid_code_works_once()
     {
         using var factory = new TestAppFactory();
-        var (_, profileId, code) = await GuideWithCodeAsync(factory);
+        var (_, profileId, code) = await AthleteWithCodeAsync(factory);
         var headset = factory.CreateClient();
 
         var first = await headset.PostAsJsonAsync("/api/pairing/claim", new { code });
@@ -40,16 +41,16 @@ public class PairingTests
         Assert.Equal(profileId, claim.ProfileId);
         Assert.False(string.IsNullOrEmpty(claim.Token));
 
-        // REQUIRED: reusing the same code fails.
+        // reusing the same code fails.
         Assert.Equal(HttpStatusCode.BadRequest, second.StatusCode);
     }
 
-    // REQUIRED (P4 table): an expired code fails.
+    // An expired code fails.
     [Fact]
     public async Task Expired_code_fails()
     {
         using var factory = new TestAppFactory();
-        var (_, _, code) = await GuideWithCodeAsync(factory);
+        var (_, _, code) = await AthleteWithCodeAsync(factory);
 
         // Pretend 11 minutes have passed: move the code's expiry into the past.
         using (var scope = factory.Services.CreateScope())
@@ -80,7 +81,7 @@ public class PairingTests
     public async Task Code_is_six_readable_characters_and_case_insensitive()
     {
         using var factory = new TestAppFactory();
-        var (_, _, code) = await GuideWithCodeAsync(factory);
+        var (_, _, code) = await AthleteWithCodeAsync(factory);
 
         Assert.Equal(PairingEndpoints.CodeLength, code.Length);
         Assert.All(code, c => Assert.Contains(c, PairingEndpoints.CodeAlphabet));
@@ -95,37 +96,36 @@ public class PairingTests
     public async Task Code_expires_after_ten_minutes()
     {
         using var factory = new TestAppFactory();
-        var guide = await factory.CreateGuideClientAsync("guide-a@example.com");
-        var athlete = await CreateAthleteAsync(guide, "Athlete One");
+        var athlete = await factory.CreateAthleteClientAsync("athlete-a@example.com");
+        var profile = await SaveProfileAsync(athlete, "Athlete One");
 
-        var response = await guide.PostAsJsonAsync("/api/pairing/codes", new { profileId = athlete.ProfileID });
+        var response = await athlete.PostAsync("/api/pairing/codes", null);
         var result = (await response.Content.ReadFromJsonAsync<CodeResult>(Json))!;
 
         var minutesLeft = (result.ExpiresAt - DateTime.UtcNow).TotalMinutes;
         Assert.InRange(minutesLeft, 9.5, 10.0);
     }
 
-    // A guide can't make a code for another guide's athlete (answers 404, as if it didn't exist).
+    // An athlete who hasn't saved a profile yet can't make a code: there is nothing to pair with
     [Fact]
-    public async Task Guide_cannot_make_code_for_another_guides_athlete()
+    public async Task Code_needs_a_saved_profile()
     {
-        using var factory = new TestAppFactory();
-        var guideA = await factory.CreateGuideClientAsync("guide-a@example.com");
-        var guideB = await factory.CreateGuideClientAsync("guide-b@example.com");
-        var athleteOfA = await CreateAthleteAsync(guideA, "Belongs To A");
+       using var factory = new TestAppFactory();
 
-        var response = await guideB.PostAsJsonAsync("/api/pairing/codes", new { profileId = athleteOfA.ProfileID });
+       var athlete = await factory.CreateAthleteClientAsync("athlete-a@example.com");
 
-        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+       var response = await athlete.PostAsync("/api/pairing/codes", null);
+
+       Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
 
-    // Only a signed-in guide can make codes.
+    // Only a signed-in athlete can make codes.
     [Fact]
     public async Task Not_signed_in_cannot_make_codes()
     {
         using var factory = new TestAppFactory();
 
-        var response = await factory.CreateClient().PostAsJsonAsync("/api/pairing/codes", new { profileId = 1 });
+        var response = await factory.CreateClient().PostAsync("/api/pairing/codes", null);
 
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
@@ -135,7 +135,7 @@ public class PairingTests
     public async Task Only_the_token_hash_is_stored()
     {
         using var factory = new TestAppFactory();
-        var (_, _, code) = await GuideWithCodeAsync(factory);
+        var (_, _, code) = await AthleteWithCodeAsync(factory);
 
         var response = await factory.CreateClient().PostAsJsonAsync("/api/pairing/claim", new { code });
         var claim = (await response.Content.ReadFromJsonAsync<ClaimResult>(Json))!;

@@ -63,10 +63,6 @@ namespace HaloVision.Api.Migrations
                     b.Property<DateTime>("ExpiresAt")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("GuideId")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
                     b.Property<int>("ProfileID")
                         .HasColumnType("INTEGER");
 
@@ -89,9 +85,8 @@ namespace HaloVision.Api.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("AffectedEye")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
+                    b.Property<int>("AffectedEye")
+                        .HasColumnType("INTEGER");
 
                     b.Property<bool>("AudioOn")
                         .HasColumnType("INTEGER");
@@ -102,20 +97,14 @@ namespace HaloVision.Api.Migrations
                     b.Property<float>("Brightness")
                         .HasColumnType("REAL");
 
-                    b.Property<string>("ColorPalette")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
+                    b.Property<int>("ColorPalette")
+                        .HasColumnType("INTEGER");
 
                     b.Property<float>("Contrast")
                         .HasColumnType("REAL");
 
-                    b.Property<string>("CueMode")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("GuideId")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
+                    b.Property<int>("CueMode")
+                        .HasColumnType("INTEGER");
 
                     b.Property<float>("Height")
                         .HasColumnType("REAL");
@@ -132,32 +121,33 @@ namespace HaloVision.Api.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Severity")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
+                    b.Property<int>("Severity")
+                        .HasColumnType("INTEGER");
 
-                    b.Property<string>("SkillLevel")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
+                    b.Property<int>("SkillLevel")
+                        .HasColumnType("INTEGER");
 
-                    b.Property<string>("SurfaceMode")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
+                    b.Property<int>("SurfaceMode")
+                        .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<int>("Version")
                         .IsConcurrencyToken()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("VisionLossType")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
+                    b.Property<int>("VisionLossType")
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("ProfileID");
 
-                    b.HasIndex("GuideId");
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.ToTable("athlete_profile", (string)null);
                 });
@@ -376,7 +366,7 @@ namespace HaloVision.Api.Migrations
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
                         .WithMany()
-                        .HasForeignKey("GuideId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
