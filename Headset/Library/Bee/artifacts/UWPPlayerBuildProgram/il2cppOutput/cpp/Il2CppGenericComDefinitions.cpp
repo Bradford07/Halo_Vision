@@ -15,6 +15,8 @@ struct IAsyncOperationWithProgress_2_tBF19993F9020707D84ABE40140A24DA51AD604E1;
 struct IAsyncOperationWithProgress_2_tF0A68F74F1DB8EA20CAE1D3EE0B4CB911AE2045C;
 struct IAsyncOperation_1_t320CEDD73D1B6148F89E466592AD388D4E4C032C;
 struct IAsyncOperation_1_t6DDFC5779887EE2B297009C0FF6609B07F89E3B9;
+struct IAsyncOperation_1_tC1447786BB4F762E0EFF41026FCA091673328B07;
+struct IAsyncOperation_1_t93A608BF0333FA0DA300BE453FB6F8EAB19E849E;
 struct IAsyncOperation_1_t4952BAC5E8EEE4D1A7F5C9E77985BC56BAA008F7;
 struct IAsyncOperation_1_t6BCAA33302C9428BAC78372227CDB4F9436628DE;
 struct CharU5BU5D_t799905CF001DD5F13F7DBB310181FC4D8B7D0AAB;
@@ -22,6 +24,8 @@ struct DelegateU5BU5D_tC5AB7E8F745616680F337909D3A8E6C722CDF771;
 struct DelegateData_t9B286B493293CD2D23A5B2B5EF0E5B1324C2B77E;
 struct ISpatialInteractionManagerStatics_t283D48BD460922F8AFCD94F2B7CC176341E2886A;
 struct ISpatialInteractionManagerStatics2_tE06EC22AF3CF022158D0AF5171B7292FB9ADAE6B;
+struct MediaFrameArrivedEventArgs_t06062F269F144565B673DC66AFA194CE6B88B252;
+struct MediaFrameReader_t5FE10EEC48D89B788338787C89EB0D615737559D;
 struct MethodInfo_t;
 struct SpatialInteractionManager_t3C36EB3E0C6F6CFDFBC086782543CED7694A1AFE;
 struct SpatialInteractionSourceEventArgs_t88E5FE3A52CE1B2DD6554F752EEFA73714FBEBC3;
@@ -29,6 +33,8 @@ struct Void_t4861ACF8F4594C3437BB48B6E56783494B843915;
 
 struct Delegate_t_marshaled_com;
 struct Delegate_t_marshaled_pinvoke;
+struct IAsyncOperationCompletedHandler_1_t1A36A0AAC9D2A46DC581930DA628F51561DD75FD_ComCallableWrapper;
+struct IAsyncOperationCompletedHandler_1_t47435E2F039DF25B2403458B88003A9E02D68522_ComCallableWrapper;
 struct IAsyncOperationCompletedHandler_1_t711DE28B72DEE40F11ED6A0D9D25AE28815A5494_ComCallableWrapper;
 struct IAsyncOperationCompletedHandler_1_tA7710B434B7DEFF4A49B016623D78774E0A66F2A_ComCallableWrapper;
 struct IAsyncOperationCompletedHandler_1_tAF98C4B4DBD29BB5D32E1C99FA727763BCA776C6_ComCallableWrapper;
@@ -46,11 +52,17 @@ struct IAsyncOperation_1_t320CEDD73D1B6148F89E466592AD388D4E4C032C;
 struct IAsyncOperation_1_t4952BAC5E8EEE4D1A7F5C9E77985BC56BAA008F7;
 struct IAsyncOperation_1_t6BCAA33302C9428BAC78372227CDB4F9436628DE;
 struct IAsyncOperation_1_t6DDFC5779887EE2B297009C0FF6609B07F89E3B9;
+struct IAsyncOperation_1_t93A608BF0333FA0DA300BE453FB6F8EAB19E849E;
+struct IAsyncOperation_1_tC1447786BB4F762E0EFF41026FCA091673328B07;
 struct IBuffer_t90288BDCFBC645943B1DFD6DA30EDC167F42E127;
 struct IMapView_2_tAA4EA7FEBBB29AE5DA9B1A7355F3FF19DB6B8AE8;
+struct IMediaFrameArrivedEventArgs_t244C6581ED4B584CEE55CED36642358A5B18C71B;
+struct IMediaFrameReader_t1B5DDBD2A114EA1218EDE4BEBE5B57DE1074444B;
+struct IMediaFrameReference_tB7A7EC8B6F444C163677DCF9A0946CE8C660F131;
 struct ISpatialInteractionManager_t821A82A320E03A01E400678AD9988006DE884DB3;
 struct ISpatialInteractionSourceEventArgs_t09299E0FE2F250A82178C0EDAB2093F4A65A2FF4;
 struct ISpatialInteractionSourceState_t14E7135B91784619B414104B584D8E803B5ED8CC;
+struct ITypedEventHandler_2_t32BC433EDA66DA085C3DB841913C6CF9F0F3A0FB_ComCallableWrapper;
 struct ITypedEventHandler_2_tDBCF13D8CC254870E369ECD1AAA8E0628F36AD8F_ComCallableWrapper;
 
 
@@ -103,12 +115,23 @@ struct NOVTABLE IAsyncOperation_1_t6DDFC5779887EE2B297009C0FF6609B07F89E3B9 : Il
 	virtual il2cpp_hresult_t STDCALL IAsyncOperation_1_get_Completed_mF5D7D584EB42725EB00B767AB45D3C01D86179E6(IAsyncOperationCompletedHandler_1_tE7D7CD78AA3740F9A5F2ADC503889C28DBA92F52_ComCallableWrapper** comReturnValue) = 0;
 	virtual il2cpp_hresult_t STDCALL IAsyncOperation_1_GetResults_m8DC9B66CF8C9CACC2DB3433EE8B997F9C73BF2BF(bool* comReturnValue) = 0;
 };
+struct NOVTABLE IAsyncOperation_1_tC1447786BB4F762E0EFF41026FCA091673328B07 : Il2CppIInspectable
+{
+	static const Il2CppGuid IID;
+	virtual il2cpp_hresult_t STDCALL IAsyncOperation_1_put_Completed_m44E96432E36E150D2CB281EB66DA0EAA9BDED72E(IAsyncOperationCompletedHandler_1_t47435E2F039DF25B2403458B88003A9E02D68522_ComCallableWrapper* ___0_handler) = 0;
+	virtual il2cpp_hresult_t STDCALL IAsyncOperation_1_get_Completed_m66734C60E1978930D2BE838AC5A82871B8D52EC7(IAsyncOperationCompletedHandler_1_t47435E2F039DF25B2403458B88003A9E02D68522_ComCallableWrapper** comReturnValue) = 0;
+	virtual il2cpp_hresult_t STDCALL IAsyncOperation_1_GetResults_m72167E426578D06824CBF79E9042827B9F8130D6(IMediaFrameReader_t1B5DDBD2A114EA1218EDE4BEBE5B57DE1074444B** comReturnValue) = 0;
+};
 struct NOVTABLE IAsyncOperation_1_t4952BAC5E8EEE4D1A7F5C9E77985BC56BAA008F7 : Il2CppIInspectable
 {
 	static const Il2CppGuid IID;
 	virtual il2cpp_hresult_t STDCALL IAsyncOperation_1_put_Completed_m7711B0F8CF3665147D7FC0E9D08906226BED7092(IAsyncOperationCompletedHandler_1_tA7710B434B7DEFF4A49B016623D78774E0A66F2A_ComCallableWrapper* ___0_handler) = 0;
 	virtual il2cpp_hresult_t STDCALL IAsyncOperation_1_get_Completed_mF4FA919F0C63B121B2C56D3699F182CD74BD70CD(IAsyncOperationCompletedHandler_1_tA7710B434B7DEFF4A49B016623D78774E0A66F2A_ComCallableWrapper** comReturnValue) = 0;
 	virtual il2cpp_hresult_t STDCALL IAsyncOperation_1_GetResults_m1E3BDE4BA894352C76FF577E39527631332EBA9E(Il2CppIInspectable** comReturnValue) = 0;
+};
+struct NOVTABLE IMediaFrameArrivedEventArgs_t244C6581ED4B584CEE55CED36642358A5B18C71B : Il2CppIInspectable
+{
+	static const Il2CppGuid IID;
 };
 struct NOVTABLE ISpatialInteractionManagerStatics_t283D48BD460922F8AFCD94F2B7CC176341E2886A : Il2CppIInspectable
 {
@@ -124,6 +147,12 @@ struct NOVTABLE ISpatialInteractionSourceEventArgs_t09299E0FE2F250A82178C0EDAB20
 {
 	static const Il2CppGuid IID;
 	virtual il2cpp_hresult_t STDCALL ISpatialInteractionSourceEventArgs_get_State_m3AEB71ED76C04BA8FB2B361B02533EB7252DF162(ISpatialInteractionSourceState_t14E7135B91784619B414104B584D8E803B5ED8CC** comReturnValue) = 0;
+};
+struct MediaFrameArrivedEventArgs_t06062F269F144565B673DC66AFA194CE6B88B252  : public Il2CppComObject
+{
+};
+struct MediaFrameReader_t5FE10EEC48D89B788338787C89EB0D615737559D  : public Il2CppComObject
+{
 };
 struct SpatialInteractionManager_t3C36EB3E0C6F6CFDFBC086782543CED7694A1AFE  : public Il2CppComObject
 {
@@ -223,6 +252,15 @@ struct Delegate_t_marshaled_com
 	DelegateData_t9B286B493293CD2D23A5B2B5EF0E5B1324C2B77E* ___data;
 	int32_t ___method_is_virtual;
 };
+struct NOVTABLE IMediaFrameReader_t1B5DDBD2A114EA1218EDE4BEBE5B57DE1074444B : Il2CppIInspectable
+{
+	static const Il2CppGuid IID;
+	virtual il2cpp_hresult_t STDCALL IMediaFrameReader_add_FrameArrived_m0D9C5CCA4A1FA9542CB5AE6652EC1569974BF496(ITypedEventHandler_2_t32BC433EDA66DA085C3DB841913C6CF9F0F3A0FB_ComCallableWrapper* ___0_handler, EventRegistrationToken_tFEB6E75BA7C6603DB3207E3ABA9156228EB87F1B* comReturnValue) = 0;
+	virtual il2cpp_hresult_t STDCALL IMediaFrameReader_remove_FrameArrived_m43C14F81946A7C3141B937736F22890E4F52D57B(EventRegistrationToken_tFEB6E75BA7C6603DB3207E3ABA9156228EB87F1B ___0_token) = 0;
+	virtual il2cpp_hresult_t STDCALL IMediaFrameReader_TryAcquireLatestFrame_m6FA0456D142812392EA7D5125DE91F0DECE661B8(IMediaFrameReference_tB7A7EC8B6F444C163677DCF9A0946CE8C660F131** comReturnValue) = 0;
+	virtual il2cpp_hresult_t STDCALL IMediaFrameReader_StartAsync_mD5DA38941B666A998FE9DBA9142924B3DF887061(IAsyncOperation_1_t93A608BF0333FA0DA300BE453FB6F8EAB19E849E** comReturnValue) = 0;
+	virtual il2cpp_hresult_t STDCALL IMediaFrameReader_U24__Stripped0_StopAsync_m8451B58F9795E6B327DF6DA74389F9A30B9EB5C9() = 0;
+};
 struct NOVTABLE ISpatialInteractionManager_t821A82A320E03A01E400678AD9988006DE884DB3 : Il2CppIInspectable
 {
 	static const Il2CppGuid IID;
@@ -240,9 +278,20 @@ struct NOVTABLE ISpatialInteractionManager_t821A82A320E03A01E400678AD9988006DE88
 	virtual il2cpp_hresult_t STDCALL ISpatialInteractionManager_U24__Stripped9_remove_InteractionDetected_m25E9512FD5CB56CF43AAAF74572EBD40D196C765() = 0;
 	virtual il2cpp_hresult_t STDCALL ISpatialInteractionManager_U24__Stripped10_GetDetectedSourcesAtTimestamp_m0D036CF763B253B9AC9FF6757CE8CFBD76604431() = 0;
 };
+struct MediaFrameReaderStartStatus_tCC1ABDC4B52A3A4C08667B42F2ECA85BCE3945F6 
+{
+	int32_t ___value__;
+};
 struct SpatialPerceptionAccessStatus_t6FBFF80605880C4E724AAF9B1EACEBB2F6AE4D63 
 {
 	int32_t ___value__;
+};
+struct NOVTABLE IAsyncOperation_1_t93A608BF0333FA0DA300BE453FB6F8EAB19E849E : Il2CppIInspectable
+{
+	static const Il2CppGuid IID;
+	virtual il2cpp_hresult_t STDCALL IAsyncOperation_1_put_Completed_m93D5C5E46F64CF08779AEBD96E11956DE4152BD7(IAsyncOperationCompletedHandler_1_t1A36A0AAC9D2A46DC581930DA628F51561DD75FD_ComCallableWrapper* ___0_handler) = 0;
+	virtual il2cpp_hresult_t STDCALL IAsyncOperation_1_get_Completed_m912461E5BB4A4A80C631C9BFD3FC3D6C42EE084A(IAsyncOperationCompletedHandler_1_t1A36A0AAC9D2A46DC581930DA628F51561DD75FD_ComCallableWrapper** comReturnValue) = 0;
+	virtual il2cpp_hresult_t STDCALL IAsyncOperation_1_GetResults_m741A9878C74F22A8F90691B668B914129DA767F8(int32_t* comReturnValue) = 0;
 };
 struct NOVTABLE IAsyncOperation_1_t6BCAA33302C9428BAC78372227CDB4F9436628DE : Il2CppIInspectable
 {
@@ -279,6 +328,24 @@ struct IAsyncOperationCompletedHandler_1_tE7D7CD78AA3740F9A5F2ADC503889C28DBA92F
 {
 	static const Il2CppGuid IID;
 	virtual il2cpp_hresult_t STDCALL Invoke(IAsyncOperation_1_t6DDFC5779887EE2B297009C0FF6609B07F89E3B9* ___0_asyncInfo, int32_t ___1_asyncStatus) = 0;
+};
+
+struct AsyncOperationCompletedHandler_1_t47435E2F039DF25B2403458B88003A9E02D68522  : public MulticastDelegate_t
+{
+};
+struct IAsyncOperationCompletedHandler_1_t47435E2F039DF25B2403458B88003A9E02D68522_ComCallableWrapper : Il2CppIUnknown
+{
+	static const Il2CppGuid IID;
+	virtual il2cpp_hresult_t STDCALL Invoke(IAsyncOperation_1_tC1447786BB4F762E0EFF41026FCA091673328B07* ___0_asyncInfo, int32_t ___1_asyncStatus) = 0;
+};
+
+struct AsyncOperationCompletedHandler_1_t1A36A0AAC9D2A46DC581930DA628F51561DD75FD  : public MulticastDelegate_t
+{
+};
+struct IAsyncOperationCompletedHandler_1_t1A36A0AAC9D2A46DC581930DA628F51561DD75FD_ComCallableWrapper : Il2CppIUnknown
+{
+	static const Il2CppGuid IID;
+	virtual il2cpp_hresult_t STDCALL Invoke(IAsyncOperation_1_t93A608BF0333FA0DA300BE453FB6F8EAB19E849E* ___0_asyncInfo, int32_t ___1_asyncStatus) = 0;
 };
 
 struct AsyncOperationCompletedHandler_1_tA7710B434B7DEFF4A49B016623D78774E0A66F2A  : public MulticastDelegate_t
@@ -360,6 +427,15 @@ struct IEventHandler_1_tD8C4A5BE1F7C91B1A7E99AE87AFD2F5432C38746_ComCallableWrap
 {
 	static const Il2CppGuid IID;
 	virtual il2cpp_hresult_t STDCALL Invoke(Il2CppIInspectable* ___0_sender, Il2CppIInspectable* ___1_e) = 0;
+};
+
+struct TypedEventHandler_2_t32BC433EDA66DA085C3DB841913C6CF9F0F3A0FB  : public MulticastDelegate_t
+{
+};
+struct ITypedEventHandler_2_t32BC433EDA66DA085C3DB841913C6CF9F0F3A0FB_ComCallableWrapper : Il2CppIUnknown
+{
+	static const Il2CppGuid IID;
+	virtual il2cpp_hresult_t STDCALL Invoke(IMediaFrameReader_t1B5DDBD2A114EA1218EDE4BEBE5B57DE1074444B* ___0_sender, IMediaFrameArrivedEventArgs_t244C6581ED4B584CEE55CED36642358A5B18C71B* ___1_args) = 0;
 };
 
 struct TypedEventHandler_2_t6B82D27B2ED38E7ADDA1ADD5B208073B69D39B83  : public MulticastDelegate_t
@@ -500,6 +576,74 @@ IL2CPP_EXTERN_C  void AsyncOperationCompletedHandler_1_Invoke_mA3A55B647C5BA005B
 	}
 
 	const il2cpp_hresult_t hr = ____asyncOperationCompletedHandler_1_tE7D7CD78AA3740F9A5F2ADC503889C28DBA92F52->Invoke(____0_asyncInfo_marshaled, ___1_asyncStatus);
+
+	il2cpp_codegen_com_raise_exception_if_failed(hr, false);
+
+	if (____0_asyncInfo_marshaled != NULL)
+	{
+		(____0_asyncInfo_marshaled)->Release();
+		____0_asyncInfo_marshaled = NULL;
+	}
+
+}
+const Il2CppGuid IAsyncOperationCompletedHandler_1_t47435E2F039DF25B2403458B88003A9E02D68522_ComCallableWrapper::IID = { 0xa6214dad, 0xb917, 0x5c89, 0xa0, 0x68, 0xe3, 0x2c, 0x9a, 0x70, 0x37, 0xd3 };
+IL2CPP_EXTERN_C  void AsyncOperationCompletedHandler_1_Invoke_mAD7747DBF9DDB1380BFC4AA59FE4F3FDB50D4748_NativeInvoker (Il2CppComObject* __this, RuntimeObject* ___0_asyncInfo, int32_t ___1_asyncStatus, const RuntimeMethod* method)
+{
+	IAsyncOperationCompletedHandler_1_t47435E2F039DF25B2403458B88003A9E02D68522_ComCallableWrapper* ____asyncOperationCompletedHandler_1_t47435E2F039DF25B2403458B88003A9E02D68522 = il2cpp_codegen_com_query_interface<IAsyncOperationCompletedHandler_1_t47435E2F039DF25B2403458B88003A9E02D68522_ComCallableWrapper>(static_cast<Il2CppComObject*>(__this));
+
+	IAsyncOperation_1_tC1447786BB4F762E0EFF41026FCA091673328B07* ____0_asyncInfo_marshaled = NULL;
+	if (___0_asyncInfo != NULL)
+	{
+		if (il2cpp_codegen_is_import_or_windows_runtime(___0_asyncInfo))
+		{
+			____0_asyncInfo_marshaled = il2cpp_codegen_com_query_interface<IAsyncOperation_1_tC1447786BB4F762E0EFF41026FCA091673328B07>(static_cast<Il2CppComObject*>(___0_asyncInfo));
+			(____0_asyncInfo_marshaled)->AddRef();
+		}
+		else
+		{
+			____0_asyncInfo_marshaled = il2cpp_codegen_com_get_or_create_ccw<IAsyncOperation_1_tC1447786BB4F762E0EFF41026FCA091673328B07>(___0_asyncInfo);
+		}
+	}
+	else
+	{
+		____0_asyncInfo_marshaled = NULL;
+	}
+
+	const il2cpp_hresult_t hr = ____asyncOperationCompletedHandler_1_t47435E2F039DF25B2403458B88003A9E02D68522->Invoke(____0_asyncInfo_marshaled, ___1_asyncStatus);
+
+	il2cpp_codegen_com_raise_exception_if_failed(hr, false);
+
+	if (____0_asyncInfo_marshaled != NULL)
+	{
+		(____0_asyncInfo_marshaled)->Release();
+		____0_asyncInfo_marshaled = NULL;
+	}
+
+}
+const Il2CppGuid IAsyncOperationCompletedHandler_1_t1A36A0AAC9D2A46DC581930DA628F51561DD75FD_ComCallableWrapper::IID = { 0x9f49b2e5, 0x2f68, 0x5c58, 0x8d, 0x8b, 0x12, 0x17, 0x6f, 0xf6, 0xea, 0x50 };
+IL2CPP_EXTERN_C  void AsyncOperationCompletedHandler_1_Invoke_mD347A5C4561AFC53ACC3BC6E17D11CF1E9C14C13_NativeInvoker (Il2CppComObject* __this, RuntimeObject* ___0_asyncInfo, int32_t ___1_asyncStatus, const RuntimeMethod* method)
+{
+	IAsyncOperationCompletedHandler_1_t1A36A0AAC9D2A46DC581930DA628F51561DD75FD_ComCallableWrapper* ____asyncOperationCompletedHandler_1_t1A36A0AAC9D2A46DC581930DA628F51561DD75FD = il2cpp_codegen_com_query_interface<IAsyncOperationCompletedHandler_1_t1A36A0AAC9D2A46DC581930DA628F51561DD75FD_ComCallableWrapper>(static_cast<Il2CppComObject*>(__this));
+
+	IAsyncOperation_1_t93A608BF0333FA0DA300BE453FB6F8EAB19E849E* ____0_asyncInfo_marshaled = NULL;
+	if (___0_asyncInfo != NULL)
+	{
+		if (il2cpp_codegen_is_import_or_windows_runtime(___0_asyncInfo))
+		{
+			____0_asyncInfo_marshaled = il2cpp_codegen_com_query_interface<IAsyncOperation_1_t93A608BF0333FA0DA300BE453FB6F8EAB19E849E>(static_cast<Il2CppComObject*>(___0_asyncInfo));
+			(____0_asyncInfo_marshaled)->AddRef();
+		}
+		else
+		{
+			____0_asyncInfo_marshaled = il2cpp_codegen_com_get_or_create_ccw<IAsyncOperation_1_t93A608BF0333FA0DA300BE453FB6F8EAB19E849E>(___0_asyncInfo);
+		}
+	}
+	else
+	{
+		____0_asyncInfo_marshaled = NULL;
+	}
+
+	const il2cpp_hresult_t hr = ____asyncOperationCompletedHandler_1_t1A36A0AAC9D2A46DC581930DA628F51561DD75FD->Invoke(____0_asyncInfo_marshaled, ___1_asyncStatus);
 
 	il2cpp_codegen_com_raise_exception_if_failed(hr, false);
 
@@ -838,6 +982,36 @@ IL2CPP_EXTERN_C  void EventHandler_1_Invoke_mBD72C04FF5A08A2EA93DFD21037CD1C27A4
 		(____1_e_marshaled)->Release();
 		____1_e_marshaled = NULL;
 	}
+
+}
+const Il2CppGuid ITypedEventHandler_2_t32BC433EDA66DA085C3DB841913C6CF9F0F3A0FB_ComCallableWrapper::IID = { 0xd3dd49cb, 0x8d25, 0x591a, 0x80, 0xf7, 0x83, 0x63, 0xd5, 0xc0, 0x3e, 0xc9 };
+IL2CPP_EXTERN_C  void TypedEventHandler_2_Invoke_m35138D2EEC3F1018412A02836425EFEB2B544DE6_NativeInvoker (Il2CppComObject* __this, MediaFrameReader_t5FE10EEC48D89B788338787C89EB0D615737559D* ___0_sender, MediaFrameArrivedEventArgs_t06062F269F144565B673DC66AFA194CE6B88B252* ___1_args, const RuntimeMethod* method)
+{
+	ITypedEventHandler_2_t32BC433EDA66DA085C3DB841913C6CF9F0F3A0FB_ComCallableWrapper* ____typedEventHandler_2_t32BC433EDA66DA085C3DB841913C6CF9F0F3A0FB = il2cpp_codegen_com_query_interface<ITypedEventHandler_2_t32BC433EDA66DA085C3DB841913C6CF9F0F3A0FB_ComCallableWrapper>(static_cast<Il2CppComObject*>(__this));
+
+	IMediaFrameReader_t1B5DDBD2A114EA1218EDE4BEBE5B57DE1074444B* ____0_sender_marshaled = NULL;
+	if (___0_sender != NULL)
+	{
+		____0_sender_marshaled = il2cpp_codegen_com_query_interface<IMediaFrameReader_t1B5DDBD2A114EA1218EDE4BEBE5B57DE1074444B>(static_cast<Il2CppComObject*>(___0_sender));
+	}
+	else
+	{
+		____0_sender_marshaled = NULL;
+	}
+
+	IMediaFrameArrivedEventArgs_t244C6581ED4B584CEE55CED36642358A5B18C71B* ____1_args_marshaled = NULL;
+	if (___1_args != NULL)
+	{
+		____1_args_marshaled = il2cpp_codegen_com_query_interface<IMediaFrameArrivedEventArgs_t244C6581ED4B584CEE55CED36642358A5B18C71B>(static_cast<Il2CppComObject*>(___1_args));
+	}
+	else
+	{
+		____1_args_marshaled = NULL;
+	}
+
+	const il2cpp_hresult_t hr = ____typedEventHandler_2_t32BC433EDA66DA085C3DB841913C6CF9F0F3A0FB->Invoke(____0_sender_marshaled, ____1_args_marshaled);
+
+	il2cpp_codegen_com_raise_exception_if_failed(hr, false);
 
 }
 const Il2CppGuid ITypedEventHandler_2_t6B82D27B2ED38E7ADDA1ADD5B208073B69D39B83_ComCallableWrapper::IID = { 0xc7e65ce2, 0xfad5, 0x5e3b, 0x9c, 0x58, 0x18, 0x6c, 0xa8, 0xc1, 0xdd, 0x57 };

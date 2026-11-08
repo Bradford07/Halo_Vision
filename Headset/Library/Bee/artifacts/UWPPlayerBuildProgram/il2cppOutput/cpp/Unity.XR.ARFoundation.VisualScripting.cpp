@@ -1050,6 +1050,7 @@ struct Unit_tEFDDF0DAD2C72D6F68E357D3530E23599F7D8191  : public GraphElement_1_t
 	Action_tD00B0A84D7945E50C2DFFC28EFEE6ED44ED2AD07* ___onPortsChanged;
 	Dictionary_2_tA348003A3C1CEFB3096E9D2A0BC7F1AC8EC4F710* ___U3CdefaultValuesU3Ek__BackingField;
 	RuntimeObject* ___U3CrelationsU3Ek__BackingField;
+	bool ___U3CisControlRootU3Ek__BackingField;
 };
 struct XRCameraFrameExifData_tCECD90020A07DE4EC65B94AEF60F0E1C5EC0E31E 
 {
@@ -1120,39 +1121,51 @@ struct Action_1_t34AAB95B35DF66496184F8421A8AC5F317B7D8AB  : public MulticastDel
 };
 struct EventUnit_1_t282F18C855DA005F8D4D93D0475EE6E664F4D19B  : public Unit_tEFDDF0DAD2C72D6F68E357D3530E23599F7D8191
 {
+	bool ___U3CcoroutineU3Ek__BackingField;
 };
 struct EventUnit_1_t069E228EE60F4EA704304B00C24B9A033AD82F5C  : public Unit_tEFDDF0DAD2C72D6F68E357D3530E23599F7D8191
 {
+	bool ___U3CcoroutineU3Ek__BackingField;
 };
 struct EventUnit_1_t573A173418C4998E4D7AABFD88584D6B5C8FBD3B  : public Unit_tEFDDF0DAD2C72D6F68E357D3530E23599F7D8191
 {
+	bool ___U3CcoroutineU3Ek__BackingField;
 };
 struct EventUnit_1_tE2CD7FC7E567410E45AFF31FDD31ACD83A38F60C  : public Unit_tEFDDF0DAD2C72D6F68E357D3530E23599F7D8191
 {
+	bool ___U3CcoroutineU3Ek__BackingField;
 };
 struct EventUnit_1_t95C8F22EA15EC244AA6BBB177BBC61DA8C0D3D8C  : public Unit_tEFDDF0DAD2C72D6F68E357D3530E23599F7D8191
 {
+	bool ___U3CcoroutineU3Ek__BackingField;
 };
 struct EventUnit_1_tFA0A811831250D20F368521BB27A4B414AE2E91B  : public Unit_tEFDDF0DAD2C72D6F68E357D3530E23599F7D8191
 {
+	bool ___U3CcoroutineU3Ek__BackingField;
 };
 struct EventUnit_1_tAD80D0C4FFED37E805222863D96B7EDF5C974B7A  : public Unit_tEFDDF0DAD2C72D6F68E357D3530E23599F7D8191
 {
+	bool ___U3CcoroutineU3Ek__BackingField;
 };
 struct EventUnit_1_t7A199A307AE8162B9C229B62F7CD26502C3D7BB7  : public Unit_tEFDDF0DAD2C72D6F68E357D3530E23599F7D8191
 {
+	bool ___U3CcoroutineU3Ek__BackingField;
 };
 struct EventUnit_1_tAFFBADE3ED61A5389D9F0DBCB7A880A44074F5E4  : public Unit_tEFDDF0DAD2C72D6F68E357D3530E23599F7D8191
 {
+	bool ___U3CcoroutineU3Ek__BackingField;
 };
 struct EventUnit_1_tA2B0E6295E58DB46B38F944529B0DF5E40ABF917  : public Unit_tEFDDF0DAD2C72D6F68E357D3530E23599F7D8191
 {
+	bool ___U3CcoroutineU3Ek__BackingField;
 };
 struct EventUnit_1_t59D2C69DB24A3610C3EFF77E019780AD1F395CFC  : public Unit_tEFDDF0DAD2C72D6F68E357D3530E23599F7D8191
 {
+	bool ___U3CcoroutineU3Ek__BackingField;
 };
 struct EventUnit_1_tD9858C82481E4A429A5E951A194D7D8BE9363DED  : public Unit_tEFDDF0DAD2C72D6F68E357D3530E23599F7D8191
 {
+	bool ___U3CcoroutineU3Ek__BackingField;
 };
 struct GetTrackablesUnit_6_tE3FF81AB62ABB3500474D301EF59B13BF4A1685E  : public Unit_tEFDDF0DAD2C72D6F68E357D3530E23599F7D8191
 {
@@ -2592,6 +2605,8 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void ARCameraManagerListener_OnEnable_m3FCCA5
 		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&_stringLiteralF3E84B722399601AD7E281754E917478AA9AD48D);
 		s_Il2CppMethodInitialized = true;
 	}
+	bool V_0 = false;
+	bool V_1 = false;
 	{
 		ARCameraManager_t6E957EA922911B8447D086D9FB1F860EC967BD9F* L_0;
 		L_0 = Component_GetComponent_TisARCameraManager_t6E957EA922911B8447D086D9FB1F860EC967BD9F_mD0C05CBA43EFDC472C6C4BB588C366709A88B182(__this, Component_GetComponent_TisARCameraManager_t6E957EA922911B8447D086D9FB1F860EC967BD9F_mD0C05CBA43EFDC472C6C4BB588C366709A88B182_RuntimeMethod_var);
@@ -2601,110 +2616,114 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void ARCameraManagerListener_OnEnable_m3FCCA5
 		il2cpp_codegen_runtime_class_init_inline(Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C_il2cpp_TypeInfo_var);
 		bool L_2;
 		L_2 = Object_op_Equality_mB6120F782D83091EF56A198FCEBCF066DB4A9605(L_1, (Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C*)NULL, NULL);
-		if (!L_2)
+		V_0 = L_2;
+		bool L_3 = V_0;
+		if (!L_3)
 		{
-			goto IL_011c;
+			goto IL_0124;
 		}
 	}
 	{
 		il2cpp_codegen_runtime_class_init_inline(Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C_il2cpp_TypeInfo_var);
-		ARCameraManager_t6E957EA922911B8447D086D9FB1F860EC967BD9F* L_3;
-		L_3 = Object_FindObjectOfType_TisARCameraManager_t6E957EA922911B8447D086D9FB1F860EC967BD9F_mF55990D2494651CA4DEEE92470F8B341AFF1A089(Object_FindObjectOfType_TisARCameraManager_t6E957EA922911B8447D086D9FB1F860EC967BD9F_mF55990D2494651CA4DEEE92470F8B341AFF1A089_RuntimeMethod_var);
-		__this->___m_Manager = L_3;
-		Il2CppCodeGenWriteBarrier((void**)(&__this->___m_Manager), (void*)L_3);
-		ARCameraManager_t6E957EA922911B8447D086D9FB1F860EC967BD9F* L_4 = __this->___m_Manager;
-		bool L_5;
-		L_5 = Object_op_Equality_mB6120F782D83091EF56A198FCEBCF066DB4A9605(L_4, (Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C*)NULL, NULL);
-		if (!L_5)
+		ARCameraManager_t6E957EA922911B8447D086D9FB1F860EC967BD9F* L_4;
+		L_4 = Object_FindObjectOfType_TisARCameraManager_t6E957EA922911B8447D086D9FB1F860EC967BD9F_mF55990D2494651CA4DEEE92470F8B341AFF1A089(Object_FindObjectOfType_TisARCameraManager_t6E957EA922911B8447D086D9FB1F860EC967BD9F_mF55990D2494651CA4DEEE92470F8B341AFF1A089_RuntimeMethod_var);
+		__this->___m_Manager = L_4;
+		Il2CppCodeGenWriteBarrier((void**)(&__this->___m_Manager), (void*)L_4);
+		ARCameraManager_t6E957EA922911B8447D086D9FB1F860EC967BD9F* L_5 = __this->___m_Manager;
+		bool L_6;
+		L_6 = Object_op_Equality_mB6120F782D83091EF56A198FCEBCF066DB4A9605(L_5, (Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C*)NULL, NULL);
+		V_1 = L_6;
+		bool L_7 = V_1;
+		if (!L_7)
 		{
-			goto IL_0051;
+			goto IL_0057;
 		}
 	}
 	{
-		Type_t* L_6;
-		L_6 = Object_GetType_mE10A8FC1E57F3DF29972CCBC026C2DC3942263B3(__this, NULL);
-		NullCheck(L_6);
-		String_t* L_7;
-		L_7 = VirtualFuncInvoker0< String_t* >::Invoke(7, L_6);
-		String_t* L_8;
-		L_8 = String_Concat_m9E3155FB84015C823606188F53B47CB44C444991(L_7, ((String_t*)il2cpp_codegen_initialize_runtime_metadata_inline((uintptr_t*)&_stringLiteral296249B54F612A320F18BA11A9DB197EFE4BB84A)), NULL);
-		InvalidOperationException_t5DDE4D49B7405FAAB1E4576F4715A42A3FAD4BAB* L_9 = (InvalidOperationException_t5DDE4D49B7405FAAB1E4576F4715A42A3FAD4BAB*)il2cpp_codegen_object_new(((RuntimeClass*)il2cpp_codegen_initialize_runtime_metadata_inline((uintptr_t*)&InvalidOperationException_t5DDE4D49B7405FAAB1E4576F4715A42A3FAD4BAB_il2cpp_TypeInfo_var)));
-		InvalidOperationException__ctor_mE4CB6F4712AB6D99A2358FBAE2E052B3EE976162(L_9, L_8, NULL);
-		IL2CPP_RAISE_MANAGED_EXCEPTION(L_9, ((RuntimeMethod*)il2cpp_codegen_initialize_runtime_metadata_inline((uintptr_t*)&ARCameraManagerListener_OnEnable_m3FCCA525327452EC89BEB0B6192E785675354BBD_RuntimeMethod_var)));
+		Type_t* L_8;
+		L_8 = Object_GetType_mE10A8FC1E57F3DF29972CCBC026C2DC3942263B3(__this, NULL);
+		NullCheck(L_8);
+		String_t* L_9;
+		L_9 = VirtualFuncInvoker0< String_t* >::Invoke(7, L_8);
+		String_t* L_10;
+		L_10 = String_Concat_m9E3155FB84015C823606188F53B47CB44C444991(L_9, ((String_t*)il2cpp_codegen_initialize_runtime_metadata_inline((uintptr_t*)&_stringLiteral296249B54F612A320F18BA11A9DB197EFE4BB84A)), NULL);
+		InvalidOperationException_t5DDE4D49B7405FAAB1E4576F4715A42A3FAD4BAB* L_11 = (InvalidOperationException_t5DDE4D49B7405FAAB1E4576F4715A42A3FAD4BAB*)il2cpp_codegen_object_new(((RuntimeClass*)il2cpp_codegen_initialize_runtime_metadata_inline((uintptr_t*)&InvalidOperationException_t5DDE4D49B7405FAAB1E4576F4715A42A3FAD4BAB_il2cpp_TypeInfo_var)));
+		InvalidOperationException__ctor_mE4CB6F4712AB6D99A2358FBAE2E052B3EE976162(L_11, L_10, NULL);
+		IL2CPP_RAISE_MANAGED_EXCEPTION(L_11, ((RuntimeMethod*)il2cpp_codegen_initialize_runtime_metadata_inline((uintptr_t*)&ARCameraManagerListener_OnEnable_m3FCCA525327452EC89BEB0B6192E785675354BBD_RuntimeMethod_var)));
 	}
 
-IL_0051:
+IL_0057:
 	{
-		StringBuilder_t* L_10 = __this->___m_LogBuilder;
-		Type_t* L_11;
-		L_11 = Object_GetType_mE10A8FC1E57F3DF29972CCBC026C2DC3942263B3(__this, NULL);
-		NullCheck(L_11);
-		String_t* L_12;
-		L_12 = VirtualFuncInvoker0< String_t* >::Invoke(7, L_11);
-		String_t* L_13;
-		L_13 = String_Concat_m9E3155FB84015C823606188F53B47CB44C444991(L_12, _stringLiteralE9AD4157A19CF89606B880798B83375D3DB7E6C1, NULL);
-		NullCheck(L_10);
-		StringBuilder_t* L_14;
-		L_14 = StringBuilder_Append_m08904D74E0C78E5F36DCD9C9303BDD07886D9F7D(L_10, L_13, NULL);
-		StringBuilder_t* L_15 = __this->___m_LogBuilder;
-		String_t* L_16;
-		L_16 = Object_get_name_mAC2F6B897CF1303BA4249B4CB55271AFACBB6392(__this, NULL);
-		String_t* L_17;
-		L_17 = String_Concat_m8855A6DE10F84DA7F4EC113CADDB59873A25573B(_stringLiteral6C60DEBFC7F1B80F535AA96A50E69DC5071AE93D, L_16, _stringLiteralF3E84B722399601AD7E281754E917478AA9AD48D, NULL);
-		NullCheck(L_15);
-		StringBuilder_t* L_18;
-		L_18 = StringBuilder_Append_m08904D74E0C78E5F36DCD9C9303BDD07886D9F7D(L_15, L_17, NULL);
-		StringBuilder_t* L_19 = __this->___m_LogBuilder;
-		ARCameraManager_t6E957EA922911B8447D086D9FB1F860EC967BD9F* L_20 = __this->___m_Manager;
-		NullCheck(L_20);
-		GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_21;
-		L_21 = Component_get_gameObject_m57AEFBB14DB39EC476F740BA000E170355DE691B(L_20, NULL);
+		StringBuilder_t* L_12 = __this->___m_LogBuilder;
+		Type_t* L_13;
+		L_13 = Object_GetType_mE10A8FC1E57F3DF29972CCBC026C2DC3942263B3(__this, NULL);
+		NullCheck(L_13);
+		String_t* L_14;
+		L_14 = VirtualFuncInvoker0< String_t* >::Invoke(7, L_13);
+		String_t* L_15;
+		L_15 = String_Concat_m9E3155FB84015C823606188F53B47CB44C444991(L_14, _stringLiteralE9AD4157A19CF89606B880798B83375D3DB7E6C1, NULL);
+		NullCheck(L_12);
+		StringBuilder_t* L_16;
+		L_16 = StringBuilder_Append_m08904D74E0C78E5F36DCD9C9303BDD07886D9F7D(L_12, L_15, NULL);
+		StringBuilder_t* L_17 = __this->___m_LogBuilder;
+		String_t* L_18;
+		L_18 = Object_get_name_mAC2F6B897CF1303BA4249B4CB55271AFACBB6392(__this, NULL);
+		String_t* L_19;
+		L_19 = String_Concat_m8855A6DE10F84DA7F4EC113CADDB59873A25573B(_stringLiteral6C60DEBFC7F1B80F535AA96A50E69DC5071AE93D, L_18, _stringLiteralF3E84B722399601AD7E281754E917478AA9AD48D, NULL);
+		NullCheck(L_17);
+		StringBuilder_t* L_20;
+		L_20 = StringBuilder_Append_m08904D74E0C78E5F36DCD9C9303BDD07886D9F7D(L_17, L_19, NULL);
+		StringBuilder_t* L_21 = __this->___m_LogBuilder;
+		ARCameraManager_t6E957EA922911B8447D086D9FB1F860EC967BD9F* L_22 = __this->___m_Manager;
+		NullCheck(L_22);
+		GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_23;
+		L_23 = Component_get_gameObject_m57AEFBB14DB39EC476F740BA000E170355DE691B(L_22, NULL);
+		NullCheck(L_23);
+		String_t* L_24;
+		L_24 = Object_get_name_mAC2F6B897CF1303BA4249B4CB55271AFACBB6392(L_23, NULL);
+		String_t* L_25;
+		L_25 = String_Concat_m8855A6DE10F84DA7F4EC113CADDB59873A25573B(_stringLiteral2E09EF05EED3B12F6A56A89C2BC22D0E77DC5C9E, L_24, _stringLiteralF3E84B722399601AD7E281754E917478AA9AD48D, NULL);
 		NullCheck(L_21);
-		String_t* L_22;
-		L_22 = Object_get_name_mAC2F6B897CF1303BA4249B4CB55271AFACBB6392(L_21, NULL);
-		String_t* L_23;
-		L_23 = String_Concat_m8855A6DE10F84DA7F4EC113CADDB59873A25573B(_stringLiteral2E09EF05EED3B12F6A56A89C2BC22D0E77DC5C9E, L_22, _stringLiteralF3E84B722399601AD7E281754E917478AA9AD48D, NULL);
-		NullCheck(L_19);
-		StringBuilder_t* L_24;
-		L_24 = StringBuilder_Append_m08904D74E0C78E5F36DCD9C9303BDD07886D9F7D(L_19, L_23, NULL);
-		StringBuilder_t* L_25 = __this->___m_LogBuilder;
-		ARCameraManager_t6E957EA922911B8447D086D9FB1F860EC967BD9F* L_26 = __this->___m_Manager;
-		NullCheck(L_26);
-		GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_27;
-		L_27 = Component_get_gameObject_m57AEFBB14DB39EC476F740BA000E170355DE691B(L_26, NULL);
-		NullCheck(L_27);
-		String_t* L_28;
-		L_28 = Object_get_name_mAC2F6B897CF1303BA4249B4CB55271AFACBB6392(L_27, NULL);
-		String_t* L_29;
-		L_29 = Object_get_name_mAC2F6B897CF1303BA4249B4CB55271AFACBB6392(__this, NULL);
+		StringBuilder_t* L_26;
+		L_26 = StringBuilder_Append_m08904D74E0C78E5F36DCD9C9303BDD07886D9F7D(L_21, L_25, NULL);
+		StringBuilder_t* L_27 = __this->___m_LogBuilder;
+		ARCameraManager_t6E957EA922911B8447D086D9FB1F860EC967BD9F* L_28 = __this->___m_Manager;
+		NullCheck(L_28);
+		GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_29;
+		L_29 = Component_get_gameObject_m57AEFBB14DB39EC476F740BA000E170355DE691B(L_28, NULL);
+		NullCheck(L_29);
 		String_t* L_30;
-		L_30 = String_Concat_m093934F71A9B351911EE46311674ED463B180006(_stringLiteral105B4D37F778AEF4041E8AB742473DC80494D94B, L_28, _stringLiteral0C2C7A9E7436DA4E0013C1BB4B0A6143CE0F38ED, L_29, NULL);
-		NullCheck(L_25);
-		StringBuilder_t* L_31;
-		L_31 = StringBuilder_Append_m08904D74E0C78E5F36DCD9C9303BDD07886D9F7D(L_25, L_30, NULL);
-		StringBuilder_t* L_32 = __this->___m_LogBuilder;
-		NullCheck(L_32);
+		L_30 = Object_get_name_mAC2F6B897CF1303BA4249B4CB55271AFACBB6392(L_29, NULL);
+		String_t* L_31;
+		L_31 = Object_get_name_mAC2F6B897CF1303BA4249B4CB55271AFACBB6392(__this, NULL);
+		String_t* L_32;
+		L_32 = String_Concat_m093934F71A9B351911EE46311674ED463B180006(_stringLiteral105B4D37F778AEF4041E8AB742473DC80494D94B, L_30, _stringLiteral0C2C7A9E7436DA4E0013C1BB4B0A6143CE0F38ED, L_31, NULL);
+		NullCheck(L_27);
 		StringBuilder_t* L_33;
-		L_33 = StringBuilder_Append_m08904D74E0C78E5F36DCD9C9303BDD07886D9F7D(L_32, _stringLiteral88C714A35938E8B6F0BAFDF2B7AD9DBCB055A63D, NULL);
+		L_33 = StringBuilder_Append_m08904D74E0C78E5F36DCD9C9303BDD07886D9F7D(L_27, L_32, NULL);
 		StringBuilder_t* L_34 = __this->___m_LogBuilder;
 		NullCheck(L_34);
-		String_t* L_35;
-		L_35 = VirtualFuncInvoker0< String_t* >::Invoke(3, L_34);
-		il2cpp_codegen_runtime_class_init_inline(Debug_t8394C7EEAECA3689C2C9B9DE9C7166D73596276F_il2cpp_TypeInfo_var);
-		Debug_LogWarning_m33EF1B897E0C7C6FF538989610BFAFFEF4628CA9(L_35, NULL);
+		StringBuilder_t* L_35;
+		L_35 = StringBuilder_Append_m08904D74E0C78E5F36DCD9C9303BDD07886D9F7D(L_34, _stringLiteral88C714A35938E8B6F0BAFDF2B7AD9DBCB055A63D, NULL);
 		StringBuilder_t* L_36 = __this->___m_LogBuilder;
 		NullCheck(L_36);
-		StringBuilder_t* L_37;
-		L_37 = StringBuilder_Clear_m2D76F6533574F40A4E3E2DC4E730277CBD0AF8F6(L_36, NULL);
+		String_t* L_37;
+		L_37 = VirtualFuncInvoker0< String_t* >::Invoke(3, L_36);
+		il2cpp_codegen_runtime_class_init_inline(Debug_t8394C7EEAECA3689C2C9B9DE9C7166D73596276F_il2cpp_TypeInfo_var);
+		Debug_LogWarning_m33EF1B897E0C7C6FF538989610BFAFFEF4628CA9(L_37, NULL);
+		StringBuilder_t* L_38 = __this->___m_LogBuilder;
+		NullCheck(L_38);
+		StringBuilder_t* L_39;
+		L_39 = StringBuilder_Clear_m2D76F6533574F40A4E3E2DC4E730277CBD0AF8F6(L_38, NULL);
 	}
 
-IL_011c:
+IL_0124:
 	{
-		ARCameraManager_t6E957EA922911B8447D086D9FB1F860EC967BD9F* L_38 = __this->___m_Manager;
-		Action_1_t54327BAFA15E24E002EFAE48D1AFFC020D368735* L_39 = (Action_1_t54327BAFA15E24E002EFAE48D1AFFC020D368735*)il2cpp_codegen_object_new(Action_1_t54327BAFA15E24E002EFAE48D1AFFC020D368735_il2cpp_TypeInfo_var);
-		Action_1__ctor_mDFD48034EFC4DF74EEB44B18C74DD7BAF391814E(L_39, __this, (intptr_t)((void*)ARCameraManagerListener_OnFrameReceived_mC4DF9EC830D8147C5E4604BBE32DD5D289C7E901_RuntimeMethod_var), NULL);
-		NullCheck(L_38);
-		ARCameraManager_add_frameReceived_mB30CD73DB7A25A6E7BC486BA289DBB99CBA3B7A1(L_38, L_39, NULL);
+		ARCameraManager_t6E957EA922911B8447D086D9FB1F860EC967BD9F* L_40 = __this->___m_Manager;
+		Action_1_t54327BAFA15E24E002EFAE48D1AFFC020D368735* L_41 = (Action_1_t54327BAFA15E24E002EFAE48D1AFFC020D368735*)il2cpp_codegen_object_new(Action_1_t54327BAFA15E24E002EFAE48D1AFFC020D368735_il2cpp_TypeInfo_var);
+		Action_1__ctor_mDFD48034EFC4DF74EEB44B18C74DD7BAF391814E(L_41, __this, (intptr_t)((void*)ARCameraManagerListener_OnFrameReceived_mC4DF9EC830D8147C5E4604BBE32DD5D289C7E901_RuntimeMethod_var), NULL);
+		NullCheck(L_40);
+		ARCameraManager_add_frameReceived_mB30CD73DB7A25A6E7BC486BA289DBB99CBA3B7A1(L_40, L_41, NULL);
 		return;
 	}
 }
@@ -2718,25 +2737,28 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void ARCameraManagerListener_OnDisable_mE4E3D
 		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C_il2cpp_TypeInfo_var);
 		s_Il2CppMethodInitialized = true;
 	}
+	bool V_0 = false;
 	{
 		ARCameraManager_t6E957EA922911B8447D086D9FB1F860EC967BD9F* L_0 = __this->___m_Manager;
 		il2cpp_codegen_runtime_class_init_inline(Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C_il2cpp_TypeInfo_var);
 		bool L_1;
 		L_1 = Object_op_Inequality_mD0BE578448EAA61948F25C32F8DD55AB1F778602(L_0, (Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C*)NULL, NULL);
-		if (!L_1)
+		V_0 = L_1;
+		bool L_2 = V_0;
+		if (!L_2)
 		{
-			goto IL_0025;
+			goto IL_0029;
 		}
 	}
 	{
-		ARCameraManager_t6E957EA922911B8447D086D9FB1F860EC967BD9F* L_2 = __this->___m_Manager;
-		Action_1_t54327BAFA15E24E002EFAE48D1AFFC020D368735* L_3 = (Action_1_t54327BAFA15E24E002EFAE48D1AFFC020D368735*)il2cpp_codegen_object_new(Action_1_t54327BAFA15E24E002EFAE48D1AFFC020D368735_il2cpp_TypeInfo_var);
-		Action_1__ctor_mDFD48034EFC4DF74EEB44B18C74DD7BAF391814E(L_3, __this, (intptr_t)((void*)ARCameraManagerListener_OnFrameReceived_mC4DF9EC830D8147C5E4604BBE32DD5D289C7E901_RuntimeMethod_var), NULL);
-		NullCheck(L_2);
-		ARCameraManager_remove_frameReceived_m8D9C301201B5079323169510656821F0286AA67D(L_2, L_3, NULL);
+		ARCameraManager_t6E957EA922911B8447D086D9FB1F860EC967BD9F* L_3 = __this->___m_Manager;
+		Action_1_t54327BAFA15E24E002EFAE48D1AFFC020D368735* L_4 = (Action_1_t54327BAFA15E24E002EFAE48D1AFFC020D368735*)il2cpp_codegen_object_new(Action_1_t54327BAFA15E24E002EFAE48D1AFFC020D368735_il2cpp_TypeInfo_var);
+		Action_1__ctor_mDFD48034EFC4DF74EEB44B18C74DD7BAF391814E(L_4, __this, (intptr_t)((void*)ARCameraManagerListener_OnFrameReceived_mC4DF9EC830D8147C5E4604BBE32DD5D289C7E901_RuntimeMethod_var), NULL);
+		NullCheck(L_3);
+		ARCameraManager_remove_frameReceived_m8D9C301201B5079323169510656821F0286AA67D(L_3, L_4, NULL);
 	}
 
-IL_0025:
+IL_0029:
 	{
 		return;
 	}
@@ -2891,6 +2913,7 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void ARFaceListener_OnEnable_mFB7CEACFC165E07
 		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C_il2cpp_TypeInfo_var);
 		s_Il2CppMethodInitialized = true;
 	}
+	bool V_0 = false;
 	{
 		ARFace_t73C068C9C8422F79A858EC41C322D399305B8453* L_0;
 		L_0 = Component_GetComponent_TisARFace_t73C068C9C8422F79A858EC41C322D399305B8453_mDBDD6B87463FFFEC97691FFEDD402BE1F8D1BC07(__this, Component_GetComponent_TisARFace_t73C068C9C8422F79A858EC41C322D399305B8453_mDBDD6B87463FFFEC97691FFEDD402BE1F8D1BC07_RuntimeMethod_var);
@@ -2900,28 +2923,30 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void ARFaceListener_OnEnable_mFB7CEACFC165E07
 		il2cpp_codegen_runtime_class_init_inline(Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C_il2cpp_TypeInfo_var);
 		bool L_2;
 		L_2 = Object_op_Equality_mB6120F782D83091EF56A198FCEBCF066DB4A9605(L_1, (Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C*)NULL, NULL);
-		if (!L_2)
+		V_0 = L_2;
+		bool L_3 = V_0;
+		if (!L_3)
 		{
-			goto IL_0035;
+			goto IL_0038;
 		}
 	}
 	{
-		String_t* L_3;
-		L_3 = Object_get_name_mAC2F6B897CF1303BA4249B4CB55271AFACBB6392(__this, NULL);
 		String_t* L_4;
-		L_4 = String_Concat_m8855A6DE10F84DA7F4EC113CADDB59873A25573B(((String_t*)il2cpp_codegen_initialize_runtime_metadata_inline((uintptr_t*)&_stringLiteral74A7350AADB2E77B2FEC504172F6A7570C2061B4)), L_3, ((String_t*)il2cpp_codegen_initialize_runtime_metadata_inline((uintptr_t*)&_stringLiteralB724CA1414F1B6A0513232FC2A7137B8A9657B4D)), NULL);
-		InvalidOperationException_t5DDE4D49B7405FAAB1E4576F4715A42A3FAD4BAB* L_5 = (InvalidOperationException_t5DDE4D49B7405FAAB1E4576F4715A42A3FAD4BAB*)il2cpp_codegen_object_new(((RuntimeClass*)il2cpp_codegen_initialize_runtime_metadata_inline((uintptr_t*)&InvalidOperationException_t5DDE4D49B7405FAAB1E4576F4715A42A3FAD4BAB_il2cpp_TypeInfo_var)));
-		InvalidOperationException__ctor_mE4CB6F4712AB6D99A2358FBAE2E052B3EE976162(L_5, L_4, NULL);
-		IL2CPP_RAISE_MANAGED_EXCEPTION(L_5, ((RuntimeMethod*)il2cpp_codegen_initialize_runtime_metadata_inline((uintptr_t*)&ARFaceListener_OnEnable_mFB7CEACFC165E077636A31D574F41CAEFB2737A1_RuntimeMethod_var)));
+		L_4 = Object_get_name_mAC2F6B897CF1303BA4249B4CB55271AFACBB6392(__this, NULL);
+		String_t* L_5;
+		L_5 = String_Concat_m8855A6DE10F84DA7F4EC113CADDB59873A25573B(((String_t*)il2cpp_codegen_initialize_runtime_metadata_inline((uintptr_t*)&_stringLiteral74A7350AADB2E77B2FEC504172F6A7570C2061B4)), L_4, ((String_t*)il2cpp_codegen_initialize_runtime_metadata_inline((uintptr_t*)&_stringLiteralB724CA1414F1B6A0513232FC2A7137B8A9657B4D)), NULL);
+		InvalidOperationException_t5DDE4D49B7405FAAB1E4576F4715A42A3FAD4BAB* L_6 = (InvalidOperationException_t5DDE4D49B7405FAAB1E4576F4715A42A3FAD4BAB*)il2cpp_codegen_object_new(((RuntimeClass*)il2cpp_codegen_initialize_runtime_metadata_inline((uintptr_t*)&InvalidOperationException_t5DDE4D49B7405FAAB1E4576F4715A42A3FAD4BAB_il2cpp_TypeInfo_var)));
+		InvalidOperationException__ctor_mE4CB6F4712AB6D99A2358FBAE2E052B3EE976162(L_6, L_5, NULL);
+		IL2CPP_RAISE_MANAGED_EXCEPTION(L_6, ((RuntimeMethod*)il2cpp_codegen_initialize_runtime_metadata_inline((uintptr_t*)&ARFaceListener_OnEnable_mFB7CEACFC165E077636A31D574F41CAEFB2737A1_RuntimeMethod_var)));
 	}
 
-IL_0035:
+IL_0038:
 	{
-		ARFace_t73C068C9C8422F79A858EC41C322D399305B8453* L_6 = __this->___m_Face;
-		Action_1_t30DB722576CDAD6BB3F09BD60358BF49AA947548* L_7 = (Action_1_t30DB722576CDAD6BB3F09BD60358BF49AA947548*)il2cpp_codegen_object_new(Action_1_t30DB722576CDAD6BB3F09BD60358BF49AA947548_il2cpp_TypeInfo_var);
-		Action_1__ctor_m3A71B4EF8E0C69EED8BBC0BB8AE9856BEA1929D1(L_7, __this, (intptr_t)((void*)ARFaceListener_OnFaceUpdated_mEB4873976DAAC601F816A95E0E36C93CC6C43D51_RuntimeMethod_var), NULL);
-		NullCheck(L_6);
-		ARFace_add_updated_m20975C4A22DDFCC57D15C0205754C3902A699738(L_6, L_7, NULL);
+		ARFace_t73C068C9C8422F79A858EC41C322D399305B8453* L_7 = __this->___m_Face;
+		Action_1_t30DB722576CDAD6BB3F09BD60358BF49AA947548* L_8 = (Action_1_t30DB722576CDAD6BB3F09BD60358BF49AA947548*)il2cpp_codegen_object_new(Action_1_t30DB722576CDAD6BB3F09BD60358BF49AA947548_il2cpp_TypeInfo_var);
+		Action_1__ctor_m3A71B4EF8E0C69EED8BBC0BB8AE9856BEA1929D1(L_8, __this, (intptr_t)((void*)ARFaceListener_OnFaceUpdated_mEB4873976DAAC601F816A95E0E36C93CC6C43D51_RuntimeMethod_var), NULL);
+		NullCheck(L_7);
+		ARFace_add_updated_m20975C4A22DDFCC57D15C0205754C3902A699738(L_7, L_8, NULL);
 		return;
 	}
 }

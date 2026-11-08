@@ -1,5 +1,7 @@
 ScriptsOnlyBuild:
   usedScripts:
+    Assembly-CSharp.dll:
+    - SensorCapture
     Microsoft.MixedReality.OpenXR.dll:
     - Microsoft.MixedReality.OpenXR.HPMixedRealityControllerProfile
     - Microsoft.MixedReality.OpenXR.HandTrackingFeaturePlugin
@@ -24,6 +26,7 @@ ScriptsOnlyBuild:
     - TMPro.TMP_SpriteAsset
     - TMPro.TMP_StyleSheet
     - TMPro.TextMeshPro
+    - TMPro.TextMeshProUGUI
     Unity.XR.Management.Editor.dll:
     - UnityEditor.XR.Management.XRGeneralSettingsPerBuildTarget
     Unity.XR.Management.dll:
@@ -58,6 +61,7 @@ ScriptsOnlyBuild:
     - UnityEngine.XR.OpenXR.OpenXRSettings
     Unity.XR.Simulation.Editor.dll:
     - UnityEditor.XR.Simulation.SimulationEnvironmentAssetsManager
+    - UnityEditor.XR.Simulation.XREnvironmentViewManager
     - UnityEditor.XR.Simulation.XRSimulationSettings
     Unity.XR.Simulation.dll:
     - UnityEngine.XR.Simulation.SimulatedBoundedPlane
@@ -71,6 +75,12 @@ ScriptsOnlyBuild:
     - UnityEditor.TestTools.TestRunner.Api.CallbacksHolder
     - UnityEditor.TestTools.TestRunner.TestListCacheData
     - UnityEditor.TestTools.TestRunner.TestRun.TestJobDataHolder
+    UnityEngine.UI.dll:
+    - UnityEngine.EventSystems.EventSystem
+    - UnityEngine.EventSystems.StandaloneInputModule
+    - UnityEngine.UI.CanvasScaler
+    - UnityEngine.UI.GraphicRaycaster
+    - UnityEngine.UI.RawImage
   serializedClasses:
     Microsoft.MixedReality.OpenXR:
     - Microsoft.MixedReality.OpenXR.HandTrackingOptions
@@ -128,15 +138,29 @@ ScriptsOnlyBuild:
     - Class: 108
       Script: {instanceID: 0}
     - Class: 114
-      Script: {instanceID: 2556}
+      Script: {instanceID: 1600}
     - Class: 114
-      Script: {instanceID: 4670}
+      Script: {instanceID: 2560}
     - Class: 114
-      Script: {instanceID: 5568}
+      Script: {instanceID: 2744}
     - Class: 114
-      Script: {instanceID: 5970}
+      Script: {instanceID: 3228}
     - Class: 114
-      Script: {instanceID: 7078}
+      Script: {instanceID: 3522}
+    - Class: 114
+      Script: {instanceID: 4674}
+    - Class: 114
+      Script: {instanceID: 5572}
+    - Class: 114
+      Script: {instanceID: 5974}
+    - Class: 114
+      Script: {instanceID: 7082}
+    - Class: 114
+      Script: {instanceID: 8200}
+    - Class: 114
+      Script: {instanceID: 8750}
+    - Class: 114
+      Script: {instanceID: 10044}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 128
@@ -144,6 +168,10 @@ ScriptsOnlyBuild:
     - Class: 157
       Script: {instanceID: 0}
     - Class: 196
+      Script: {instanceID: 0}
+    - Class: 222
+      Script: {instanceID: 0}
+    - Class: 223
       Script: {instanceID: 0}
     - Class: 224
       Script: {instanceID: 0}
@@ -1512,6 +1540,12 @@ ScriptsOnlyBuild:
     className: MockRuntime
   - hash:
       serializedVersion: 2
+      Hash: b6264ffc737964ec7a4fd2fa275479b6
+    assemblyName: Assembly-CSharp
+    namespaceName: 
+    className: SensorCapture
+  - hash:
+      serializedVersion: 2
       Hash: ddf098833058d45eb557d9a3a4c1ed4a
     assemblyName: Unity.XR.OpenXR
     namespaceName: UnityEngine.XR.OpenXR.Features.Extensions.PerformanceSettings
@@ -1759,4 +1793,4 @@ ScriptsOnlyBuild:
   platform: 21
   scenePathNames:
   - Assets/Scenes/HelloWorld.unity
-  playerPath: C:/Users/peter/OneDrive/Documents/HaloVisionBuilds
+  playerPath: C:/Users/peter/Documents/CS425_Capstone/Headset/Builds
