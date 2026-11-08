@@ -152,6 +152,63 @@ namespace HaloVision.Api.Migrations
                     b.ToTable("athlete_profile", (string)null);
                 });
 
+            modelBuilder.Entity("HaloVision.Shared.TestLog", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<float>("AirTempC")
+                        .HasColumnType("REAL");
+
+                    b.Property<float>("AvgFps")
+                        .HasColumnType("REAL");
+
+                    b.Property<int>("BatteryEndPct")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("BatteryStartPct")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("DeviceId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<float>("DeviceTempC")
+                        .HasColumnType("REAL");
+
+                    b.Property<float>("LatencyMs")
+                        .HasColumnType("REAL");
+
+                    b.Property<string>("Location")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<float>("Lux")
+                        .HasColumnType("REAL");
+
+                    b.Property<string>("Notes")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ParticipantCode")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<float>("SampledIoU")
+                        .HasColumnType("REAL");
+
+                    b.Property<DateTime>("StartedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("TrackingLossCount")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DeviceId");
+
+                    b.ToTable("test_log", (string)null);
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -367,6 +424,15 @@ namespace HaloVision.Api.Migrations
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("HaloVision.Shared.TestLog", b =>
+                {
+                    b.HasOne("HaloVision.Api.Data.Device", null)
+                        .WithMany()
+                        .HasForeignKey("DeviceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

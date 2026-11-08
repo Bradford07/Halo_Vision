@@ -5,6 +5,7 @@ using HaloVision.Api.Data;
 using HaloVision.Api.Features.Athletes;
 using HaloVision.Api.Features.Devices;
 using HaloVision.Api.Features.Pairing;
+using HaloVision.Api.Features.TestLogs;
 using HaloVision.Api.Features.Sync;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
@@ -40,8 +41,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 });
 
 //Headsets log in differently: with the secret token they got when they paired ("Device" scheme).
-builder.Services.AddAuthentication()
-    .AddScheme<AuthenticationSchemeOptions, DeviceAuthHandler>(DeviceAuthHandler.SchemeName, null);
+builder.Services.AddAuthentication().AddScheme<AuthenticationSchemeOptions, DeviceAuthHandler>(DeviceAuthHandler.SchemeName, null);
 
 //Each policy names exactly one login scheme on purpose:
 //a headset token can never count as an athlete login, and an athlete cookie can never count as a headset.
@@ -99,6 +99,9 @@ app.MapProfileSyncEndpoints();
 
 //Endpoints a paired headset calls about itself.
 app.MapDeviceEndpoints();
+
+//Field-test logs uploaded by a paired headset; resending a batch never stores duplicates.
+app.MapTestLogEndpoints();
 
 //Start the serer and keep it running until the user stops it.
 app.Run();
