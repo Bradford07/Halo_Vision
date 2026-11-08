@@ -1,5 +1,6 @@
 // Written with Claude Code, reviewed by Owen Cespon
 using System.Security.Claims;
+using HaloVision.Api.Auth;
 using HaloVision.Api.Data;
 using HaloVision.Shared;
 using Microsoft.EntityFrameworkCore;
@@ -106,10 +107,8 @@ public static class AthleteEndpoints
         return Results.NoContent();
     }
 
-    // The signed-in guide's user id (Identity puts it in the NameIdentifier claim).
-    private static string GuideId(ClaimsPrincipal user) =>
-        user.FindFirstValue(ClaimTypes.NameIdentifier)
-        ?? throw new InvalidOperationException("Signed-in guide has no user id.");
+    // The signed-in guide's user id (shared helper in Auth/ClaimsPrincipalExtensions.cs).
+    private static string GuideId(ClaimsPrincipal user) => user.GetGuideId();
 
     // Starting point for every query: only athletes whose hidden GuideId column is this guide.
     // Because every endpoint starts here, guide isolation is enforced in one place.

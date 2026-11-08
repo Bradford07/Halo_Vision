@@ -1,7 +1,11 @@
 using System.Text.Json.Serialization;
 using HaloVision.Api;
+using HaloVision.Api.Auth;
 using HaloVision.Api.Data;
 using HaloVision.Api.Features.Athletes;
+using HaloVision.Api.Features.Devices;
+using HaloVision.Api.Features.Pairing;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -34,11 +38,20 @@ builder.Services.ConfigureApplicationCookie(options =>
     };
 });
 
-//"Guide" policy: the request must come from a guide signed in with the Identity cookie.
-//Naming the scheme on purpose means a headset token can never count as a guide login.
+//Headsets log in differently: with the secret token they got when they paired ("Device" scheme).
+builder.Services.AddAuthentication()
+    .AddScheme<AuthenticationSchemeOptions, DeviceAuthHandler>(DeviceAuthHandler.SchemeName, null);
+
+//Each policy names exactly one login scheme on purpose:
+//a headset token can never count as a guide login, and a guide cookie can never count as a headset.
 builder.Services.AddAuthorizationBuilder()
+    //"Guide": a guide signed in with the Identity cookie (the phone web app).
     .AddPolicy(AuthPolicies.Guide, policy => policy
         .AddAuthenticationSchemes(IdentityConstants.ApplicationScheme)
+        .RequireAuthenticatedUser())
+    //"Device": a paired headset sending its token.
+    .AddPolicy(AuthPolicies.Device, policy => policy
+        .AddAuthenticationSchemes(DeviceAuthHandler.SchemeName)
         .RequireAuthenticatedUser());
 
 //JSON settings for every endpoint: property names in camelCase (the default for web APIs)
@@ -76,6 +89,12 @@ auth.MapPost("/logout", async (SignInManager<IdentityUser> signInManager) =>
 
 //The guide's athlete profiles (P3's ProfileManager).
 app.MapAthleteEndpoints();
+
+//Pairing a headset with an athlete (replaces P3's Bluetooth pair()).
+app.MapPairingEndpoints();
+
+//Endpoints a paired headset calls about itself.
+app.MapDeviceEndpoints();
 
 //Start the serer and keep it running until the user stops it.
 app.Run();
