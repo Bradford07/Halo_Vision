@@ -5,6 +5,8 @@ using HaloVision.Api.Data;
 using HaloVision.Api.Features.Athletes;
 using HaloVision.Api.Features.Devices;
 using HaloVision.Api.Features.Pairing;
+using HaloVision.Api.Features.TestLogs;
+using HaloVision.Api.Features.Sync;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -17,12 +19,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("Default")));
 
-//Register guide accounts (ASP.NET Core Identity), stored in our database,
+//Register athlete accounts (ASP.NET Core Identity), stored in our database,
 //plus the ready-made register/login endpoints that MapIdentityApi adds below.
 builder.Services.AddIdentityApiEndpoints<IdentityUser>()
     .AddEntityFrameworkStores<AppDbContext>();
 
-//Guides stay signed in with a cookie. This is an API, not a website with a login page,
+//Athletes stay signed in with a cookie. This is an API, not a website with a login page,
 //so when someone isn't signed in we answer 401/403 instead of redirecting to a login page.
 builder.Services.ConfigureApplicationCookie(options =>
 {
@@ -39,14 +41,13 @@ builder.Services.ConfigureApplicationCookie(options =>
 });
 
 //Headsets log in differently: with the secret token they got when they paired ("Device" scheme).
-builder.Services.AddAuthentication()
-    .AddScheme<AuthenticationSchemeOptions, DeviceAuthHandler>(DeviceAuthHandler.SchemeName, null);
+builder.Services.AddAuthentication().AddScheme<AuthenticationSchemeOptions, DeviceAuthHandler>(DeviceAuthHandler.SchemeName, null);
 
 //Each policy names exactly one login scheme on purpose:
-//a headset token can never count as a guide login, and a guide cookie can never count as a headset.
+//a headset token can never count as an athlete login, and an athlete cookie can never count as a headset.
 builder.Services.AddAuthorizationBuilder()
-    //"Guide": a guide signed in with the Identity cookie (the phone web app).
-    .AddPolicy(AuthPolicies.Guide, policy => policy
+    //"Athlete": an athlete signed in with the Identity cookie (the phone web app).
+    .AddPolicy(AuthPolicies.Athlete, policy => policy
         .AddAuthenticationSchemes(IdentityConstants.ApplicationScheme)
         .RequireAuthenticatedUser())
     //"Device": a paired headset sending its token.
@@ -76,25 +77,31 @@ app.UseAuthorization();
 //Endpoint that answers "server is running".
 app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
 
-//Guide accounts: POST /api/auth/register, POST /api/auth/login?useCookies=true, and more.
+//Athlete accounts: POST /api/auth/register, POST /api/auth/login?useCookies=true, and more.
 var auth = app.MapGroup("/api/auth");
 auth.MapIdentityApi<IdentityUser>();
 
-//MapIdentityApi has no logout, so we add one: it clears the guide's login cookie.
+//MapIdentityApi has no logout, so we add one: it clears the athlete's login cookie.
 auth.MapPost("/logout", async (SignInManager<IdentityUser> signInManager) =>
 {
     await signInManager.SignOutAsync();
     return Results.NoContent();
-}).RequireAuthorization(AuthPolicies.Guide);
+}).RequireAuthorization(AuthPolicies.Athlete);
 
-//The guide's athlete profiles (P3's ProfileManager).
-app.MapAthleteEndpoints();
+//The signed-in athlete's own profile (one account = one profile).
+app.MapMyProfileEndpoints();
 
-//Pairing a headset with an athlete (replaces P3's Bluetooth pair()).
+//Pairing an athlete's headset with their profile (replaces P3's Bluetooth pair()).
 app.MapPairingEndpoints();
+
+//Profile sync for a paired headset: download the latest copy and upload changes made on it
+app.MapProfileSyncEndpoints();
 
 //Endpoints a paired headset calls about itself.
 app.MapDeviceEndpoints();
+
+//Field-test logs uploaded by a paired headset; resending a batch never stores duplicates.
+app.MapTestLogEndpoints();
 
 //Start the serer and keep it running until the user stops it.
 app.Run();

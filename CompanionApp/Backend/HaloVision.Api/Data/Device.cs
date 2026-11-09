@@ -1,4 +1,3 @@
-// Written with Claude Code, reviewed by Owen Cespon
 namespace HaloVision.Api.Data;
 
 // A paired HoloLens 2 headset (P3's paired_headset table).
@@ -11,7 +10,7 @@ public class Device
     // The athlete profile this headset keeps and syncs.
     public int ProfileID { get; set; }
 
-    // A friendly name shown to the guide, e.g. "HoloLens 2".
+    // A friendly name shown to the athlete, e.g. "HoloLens 2".
     public string Name { get; set; } = "";
 
     // SHA-256 hash of the headset's secret token, as hex text.

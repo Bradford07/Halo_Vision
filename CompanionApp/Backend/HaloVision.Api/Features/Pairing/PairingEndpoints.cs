@@ -1,4 +1,3 @@
-// Written with Claude Code, reviewed by Owen Cespon
 using System.Security.Claims;
 using System.Security.Cryptography;
 using HaloVision.Api.Auth;
@@ -7,125 +6,94 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HaloVision.Api.Features.Pairing;
 
-// Pairing a headset with an athlete profile (replaces P3's Bluetooth pair()).
+// Pairing an athlete's headset with their profile (replaces P3's Bluetooth pair()).
 //
-//   1. The guide asks for a code for one of their athletes:  POST /api/pairing/codes
-//      The web app shows the code (as a QR code plus text).
-//   2. The headset scans it and claims it:                    POST /api/pairing/claim
+//   1. The athlete, signed in on the web app, asks for a code:  POST /api/pairing/codes
+//      The web app shows it (as a QR code plus text).
+//   2. The headset scans it and claims it:                        POST /api/pairing/claim
 //      The server creates a Device and returns its secret token ONCE.
 //
-// A code expires 10 minutes after it's made and works only once.
+// A code lasts 10 minutes and works once.
 public static class PairingEndpoints
 {
-    // How long a code stays valid.
-    public static readonly TimeSpan CodeLifetime = TimeSpan.FromMinutes(10);
-
-    // Letters and digits that are hard to confuse: no 0/O or 1/I. 32 characters, so a
-    // 6-character code has 32^6 = about 1 billion possibilities.
-    public const string CodeAlphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+    // Letters and digits that are hard to mix up (no 0/O, no 1/I).
+    public const string CodeAlphabet = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ";
     public const int CodeLength = 6;
 
-    // What the guide's web app sends and gets back.
-    public record CreateCodeRequest(int ProfileId);
+    // What the web app gets back.
     public record CreateCodeResponse(string Code, DateTime ExpiresAt);
 
     // What the headset sends and gets back.
-    public record ClaimRequest(string Code, string? DeviceName);
+    public record ClaimRequest(string Code);
     public record ClaimResponse(string Token, int DeviceId, int ProfileId);
 
     public static void MapPairingEndpoints(this IEndpointRouteBuilder app)
     {
-        var group = app.MapGroup("/api/pairing");
+        // Only a signed-in athlete can make codes.
+        app.MapPost("/api/pairing/codes", CreateCode).RequireAuthorization(AuthPolicies.Athlete);
 
-        // Only a signed-in guide can make codes.
-        group.MapPost("/codes", CreateCode).RequireAuthorization(AuthPolicies.Guide);
-
-        // The headset isn't logged in yet: having a valid code is its proof.
-        group.MapPost("/claim", Claim).AllowAnonymous();
+        // The headset isn't logged in yet: a valid code is its proof.
+        app.MapPost("/api/pairing/claim", Claim).AllowAnonymous();
     }
 
-    // POST /api/pairing/codes  { "profileId": 1 }
-    private static async Task<IResult> CreateCode(CreateCodeRequest request, ClaimsPrincipal user, AppDbContext db)
+    // POST /api/pairing/codes   (no body: always for the signed-in athlete's own profile)
+    private static async Task<IResult> CreateCode(ClaimsPrincipal user, AppDbContext db)
     {
-        // The guide may only pair headsets to their own athletes. Someone else's athlete
-        // answers 404, exactly as if it didn't exist (same rule as /api/athletes).
-        var guideId = user.GetGuideId();
-        var ownsAthlete = await db.AthleteProfiles.AnyAsync(p =>
-            p.ProfileID == request.ProfileId &&
-            EF.Property<string>(p, AppDbContext.GuideIdColumn) == guideId);
-        if (!ownsAthlete)
-            return Results.NotFound();
+        // Find the signed-in athlete's own profile.
+        var userId = user.GetUserId();
+        var profile = await db.AthleteProfiles
+            .SingleOrDefaultAsync(p => EF.Property<string>(p, AppDbContext.UserIdColumn) == userId);
+        if (profile is null)
+        {
+            return Results.NotFound();   // they haven't created their profile yet
+        }
 
+        // Make a random code for it, valid for 10 minutes, and save it.
         var pairingCode = new PairingCode
         {
-            ProfileID = request.ProfileId,
-            GuideId = guideId,
-            ExpiresAt = DateTime.UtcNow.Add(CodeLifetime),
+            Code = RandomNumberGenerator.GetString(CodeAlphabet, CodeLength),
+            ProfileID = profile.ProfileID,
+            ExpiresAt = DateTime.UtcNow.AddMinutes(10),
         };
         db.PairingCodes.Add(pairingCode);
-
-        // Codes are random, so two could (very rarely) come out the same. The database refuses
-        // duplicates (unique index), so if that happens we just try a new random code.
-        for (var attempt = 1; ; attempt++)
-        {
-            pairingCode.Code = RandomNumberGenerator.GetString(CodeAlphabet, CodeLength);
-            try
-            {
-                await db.SaveChangesAsync();
-                break;
-            }
-            catch (DbUpdateException) when (attempt < 5)
-            {
-                // Duplicate code: loop and try another one.
-            }
-        }
+        await db.SaveChangesAsync();
 
         return Results.Ok(new CreateCodeResponse(pairingCode.Code, pairingCode.ExpiresAt));
     }
 
-    // POST /api/pairing/claim  { "code": "K7Q2MX", "deviceName": "HoloLens 2" }
+    // POST /api/pairing/claim   body: { "code": "K7Q2MX" }
     private static async Task<IResult> Claim(ClaimRequest request, AppDbContext db)
     {
-        // Accept "k7q2mx " the same as "K7Q2MX" in case someone types it.
+        // Accept "k7q2mx " the same as "K7Q2MX", in case someone types it.
         var code = (request.Code ?? "").Trim().ToUpperInvariant();
         var now = DateTime.UtcNow;
 
-        // Everything below happens together or not at all: if creating the device fails,
-        // the code is NOT used up.
-        await using var transaction = await db.Database.BeginTransactionAsync();
-
-        // Use the code in ONE database step: "mark it used, but only if it exists, hasn't been
-        // used, and hasn't expired." If two headsets claim the same code at the same moment,
-        // only one UPDATE can match, so only one of them wins.
-        var claimed = await db.PairingCodes
-            .Where(c => c.Code == code && c.UsedAt == null && c.ExpiresAt > now)
-            .ExecuteUpdateAsync(setters => setters.SetProperty(c => c.UsedAt, now));
-
-        if (claimed == 0)
+        // The code must exist, be unused, and not be expired.
+        var pairingCode = await db.PairingCodes.SingleOrDefaultAsync(c => c.Code == code);
+        if (pairingCode is null || pairingCode.UsedAt != null || pairingCode.ExpiresAt <= now)
         {
-            // Don't say WHICH check failed, so nobody can learn which codes exist.
+            // Same message for every failure, so nobody can learn which codes exist.
             return Results.BadRequest(new { error = "The code is invalid, expired, or already used." });
         }
 
-        var profileId = await db.PairingCodes
-            .Where(c => c.Code == code)
-            .Select(c => c.ProfileID)
-            .SingleAsync();
-
-        // Make the headset's secret token. Only its hash goes in the database.
+        // Use up the code, and create the headset's Device with a new secret token.
+        // Only the token's hash is stored; the token itself is sent back once, below.
         var token = DeviceTokens.NewToken();
         var device = new Device
         {
-            ProfileID = profileId,
-            Name = string.IsNullOrWhiteSpace(request.DeviceName) ? "HoloLens 2" : request.DeviceName.Trim(),
+            ProfileID = pairingCode.ProfileID,
+            Name = "HoloLens 2",
             TokenHash = DeviceTokens.Hash(token),
             PairedAt = now,
         };
+        pairingCode.UsedAt = now;
         db.Devices.Add(device);
-        await db.SaveChangesAsync();
-        await transaction.CommitAsync();
 
-        // The only time the token is ever sent. The headset must save it.
-        return Results.Ok(new ClaimResponse(token, device.Id, profileId));
+        // SaveChanges writes both changes together: the code is marked used AND the device exists,
+        // or neither happens. (Two headsets claiming one code at the same instant can't happen
+        // with our single headset, so we don't need anything fancier.)
+        await db.SaveChangesAsync();
+
+        return Results.Ok(new ClaimResponse(token, device.Id, device.ProfileID));
     }
 }

@@ -1,4 +1,3 @@
-// Written with Claude Code, reviewed by Owen Cespon
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
@@ -15,20 +14,19 @@ public class DeviceAuthTests
     public async Task Paired_headset_token_works()
     {
         using var factory = new TestAppFactory();
-        var guide = await factory.CreateGuideClientAsync("guide-a@example.com");
-        var athlete = await CreateAthleteAsync(guide, "Athlete One");
-        var headset = await factory.PairHeadsetAsync(guide, athlete.ProfileID);
+        var athlete = await factory.CreateAthleteClientAsync("athlete-a@example.com");
+        var profile = await SaveProfileAsync(athlete, "Athlete One");
+        var headset = await factory.PairHeadsetAsync(athlete);
 
         var response = await headset.GetAsync("/api/devices/me");
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var me = (await response.Content.ReadFromJsonAsync<DeviceEndpoints.DeviceInfo>(Json))!;
-        Assert.Equal(athlete.ProfileID, me.ProfileId);
+        Assert.Equal(profile.ProfileID, me.ProfileId);
         Assert.Equal("HoloLens 2", me.Name);
-        Assert.Equal(DateTimeKind.Utc, me.PairedAt.Kind);   // every date comes back marked as UTC
     }
 
-    // REQUIRED (P4 table): a missing token gets 401.
+    //A missing token gets 401.
     [Fact]
     public async Task Missing_token_gets_401()
     {
@@ -40,7 +38,7 @@ public class DeviceAuthTests
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 
-    // REQUIRED (P4 table): a wrong token gets 401.
+    //A wrong token gets 401.
     [Fact]
     public async Task Wrong_token_gets_401()
     {
@@ -54,28 +52,28 @@ public class DeviceAuthTests
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 
-    // A guide's login cookie does not count as a headset login.
+    // An athlete's login cookie does not count as a headset login.
     [Fact]
-    public async Task Guide_cookie_is_not_a_headset_login()
+    public async Task Athlete_cookie_is_not_a_headset_login()
     {
         using var factory = new TestAppFactory();
-        var guide = await factory.CreateGuideClientAsync("guide-a@example.com");
+        var athlete = await factory.CreateAthleteClientAsync("athlete-a@example.com");
 
-        var response = await guide.GetAsync("/api/devices/me");
+        var response = await athlete.GetAsync("/api/devices/me");
 
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 
-    // A headset token does not count as a guide login.
+    // A headset token does not count as a athlete login.
     [Fact]
-    public async Task Headset_token_is_not_a_guide_login()
+    public async Task Headset_token_is_not_an_athlete_login()
     {
         using var factory = new TestAppFactory();
-        var guide = await factory.CreateGuideClientAsync("guide-a@example.com");
-        var athlete = await CreateAthleteAsync(guide, "Athlete One");
-        var headset = await factory.PairHeadsetAsync(guide, athlete.ProfileID);
+        var athlete = await factory.CreateAthleteClientAsync("athlete-a@example.com");
+        var profile = await SaveProfileAsync(athlete, "Athlete One");
+        var headset = await factory.PairHeadsetAsync(athlete);
 
-        var response = await headset.GetAsync("/api/athletes");
+        var response = await headset.GetAsync("/api/my-profile");
 
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }

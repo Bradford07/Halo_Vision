@@ -1,4 +1,3 @@
-// Written with Claude Code, reviewed by Owen Cespon
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 using HaloVision.Api.Data;
