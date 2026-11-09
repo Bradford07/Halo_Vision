@@ -28,6 +28,10 @@ builder.Services.AddIdentityApiEndpoints<IdentityUser>()
 //so when someone isn't signed in we answer 401/403 instead of redirecting to a login page.
 builder.Services.ConfigureApplicationCookie(options =>
 {
+    // The hosted site uses HTTPS; keep the sign-in cookie secure in production.
+    options.Cookie.SecurePolicy = builder.Environment.IsDevelopment()
+        ? CookieSecurePolicy.SameAsRequest
+        : CookieSecurePolicy.Always;
     options.Events.OnRedirectToLogin = context =>
     {
         context.Response.StatusCode = StatusCodes.Status401Unauthorized;
@@ -76,6 +80,11 @@ using (var scope = app.Services.CreateScope())
         await DevDataSeeder.SeedAsync(scope.ServiceProvider);
     }
 }
+
+// Serve the built React app from the same origin as the API, so browser cookies
+// and /api requests stay on one site.
+app.UseDefaultFiles();
+app.UseStaticFiles();
 
 //Check who is calling (authentication), then whether they're allowed (authorization).
 app.UseAuthentication();

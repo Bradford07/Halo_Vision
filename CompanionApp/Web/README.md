@@ -36,34 +36,34 @@ The headset redeems the displayed pairing code through `POST /api/pairing/claim`
 
 ## Publish to Azure
 
-The repo includes GitHub Actions workflows for Azure Static Web Apps (the web
-front end) and Azure App Service (the .NET API). They deploy when changes reach
-`main`; the API workflow also runs the EF Core migrations at app startup.
+The repo includes a GitHub Actions workflow that builds the React front end,
+places it in the .NET API's `wwwroot` folder, and deploys both together to one
+Azure App Service. It runs when changes reach `main`; the API applies the EF
+Core migrations at app startup.
 
-### Azure resources
+### Azure setup
 
-1. Create an Azure Static Web App on the **Standard** plan and an Azure App
-   Service running **.NET 10** on Linux. Use the same region where possible.
-2. For the Static Web App, set the GitHub deployment token as the repository
-   Actions secret `AZURE_STATIC_WEB_APPS_API_TOKEN`.
-3. For App Service, add repository variable `AZURE_WEBAPP_NAME` with the app's
-   exact name, then add its downloaded publish profile as secret
-   `AZURE_WEBAPP_PUBLISH_PROFILE`.
-4. In App Service **Environment variables**, add the app setting
+1. Create one **Linux Web App** using **.NET 10** and the **Free F1** plan.
+   This tier is intended for development and testing and has limited daily
+   compute and bandwidth, so the app can become unavailable after reaching its
+   free quotas.
+2. In GitHub repository **Settings → Secrets and variables → Actions**, add
+   variable `AZURE_WEBAPP_NAME` with the app's exact name and secret
+   `AZURE_WEBAPP_PUBLISH_PROFILE` with its downloaded publish profile.
+3. In App Service **Environment variables**, add the app setting
    `ConnectionStrings__Default` with value `Data Source=/home/halovision.db`.
-   This keeps the SQLite database in App Service's persistent home storage;
-   don't upload the local development database.
-5. Push or merge the deployment files to `main`. GitHub Actions will publish
-   the web app and API. After the first web deployment, open the Static Web App
-   **APIs** page and link the App Service as its backend. The API already uses
-   the `/api` route prefix, so the browser can keep calling `/api/...` on the
-   public site origin.
+   On Linux App Service, `/home` is persistent app storage; don't upload the
+   local development database.
+4. Turn on **HTTPS Only** in App Service. The app serves the React front end
+   and API from the same address, and sign-in cookies require HTTPS outside
+   Development.
+5. Once the App Service and GitHub settings are ready, merge the deployment
+   workflow to `main`. GitHub Actions will build and deploy the web app and API
+   together. The public address will be `https://<app-name>.azurewebsites.net`.
 
 The first Azure deployment starts with an empty database and creates its tables
 from the existing migrations. Only Development receives the fake sample
-athlete. The SQLite setup is intended for a small, single-instance project
-demo; a larger public service should move to Azure SQL.
-
-Azure Static Web Apps requires the Standard plan to link an App Service API.
-Azure hosting plans can incur charges, so choose the plans under the project's
-Azure subscription or student credits before creating the resources.
+athlete. The SQLite setup is intended for a small, single-user project demo; a
+larger public service should move to Azure SQL. Free F1 is useful for trying
+the demo, but it has no SLA and may not be suitable for a dependable public
+service.
