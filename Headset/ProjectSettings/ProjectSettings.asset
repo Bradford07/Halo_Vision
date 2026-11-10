@@ -710,6 +710,7 @@ PlayerSettings:
   platformCapabilities:
     WindowsStoreApps:
       GazeInput: True
+      InternetClient: True
       WebCam: True
   metroTargetDeviceFamilies: {}
   metroFTAName: 
