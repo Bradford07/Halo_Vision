@@ -7,6 +7,8 @@ using HaloVision.Api.Features.Devices;
 using HaloVision.Api.Features.Pairing;
 using HaloVision.Api.Features.TestLogs;
 using HaloVision.Api.Features.Sync;
+//Temp Guidance
+using HaloVision.Api.Features.Guidance;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -115,6 +117,9 @@ app.MapProfileSyncEndpoints();
 
 //Endpoints a paired headset calls about itself.
 app.MapDeviceEndpoints();
+
+//Endpoints for the guidance controls
+app.MapGuidanceEndpoints();
 
 //Field-test logs uploaded by a paired headset; resending a batch never stores duplicates.
 app.MapTestLogEndpoints();
