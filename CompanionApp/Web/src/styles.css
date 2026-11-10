@@ -350,16 +350,6 @@ p {
   padding: 5px;
 }
 
-.auth-note {
-  margin: 22px 0 0;
-  padding: 11px 12px;
-  border-radius: 9px;
-  background: var(--soft);
-  color: #575c62;
-  font-size: 10px;
-  line-height: 1.45;
-}
-
 .inline-error {
   color: var(--red);
   font-size: 11px;
@@ -461,8 +451,7 @@ p {
   font-size: 17px;
 }
 
-.empty-state p,
-.screen-note {
+.empty-state p {
   color: #676d73;
   font-size: 10px;
   line-height: 1.5;
@@ -470,13 +459,6 @@ p {
 
 .empty-state p {
   margin: 0 0 7px;
-}
-
-.screen-note {
-  margin: 18px 0 0;
-  padding: 11px 12px;
-  border-radius: 9px;
-  background: var(--soft);
 }
 
 .screen-toolbar {
