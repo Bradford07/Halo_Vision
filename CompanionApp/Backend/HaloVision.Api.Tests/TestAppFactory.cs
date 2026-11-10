@@ -32,6 +32,10 @@ public class TestAppFactory : WebApplicationFactory<Program>
     {
         _keepAlive = new SqliteConnection(_connectionString);
         _keepAlive.Open();
+
+        // Outside Development the login cookie is marked Secure (see Program.cs), so it's only
+        // sent back over HTTPS. Test clients talk to the in-memory server over https:// for that reason.
+        ClientOptions.BaseAddress = new Uri("https://localhost");
     }
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
