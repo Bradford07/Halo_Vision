@@ -512,6 +512,7 @@ MonoBehaviour:
   serverUrl: https://halo-vision-companion-demo-hrc2fkdqhnb3habf.westus3-01.azurewebsites.net
   pairingCode: 
   connectionStatusText: {fileID: 1891703046}
+  sessionController: {fileID: 1277402436}
 --- !u!4 &652958729
 Transform:
   m_ObjectHideFlags: 0

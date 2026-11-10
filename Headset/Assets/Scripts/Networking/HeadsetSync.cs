@@ -19,6 +19,8 @@ public class HeadsetSync : MonoBehaviour
 
     public TextMeshProUGUI connectionStatusText;
 
+    public SessionController sessionController;
+
     private bool isConnected = false;
     private string connectionStatus = "Backend: Not connected";
 
@@ -107,6 +109,8 @@ public class HeadsetSync : MonoBehaviour
 
                     connectionStatus = "Pairing: Successful!";
                     Debug.Log("Headset paired successfully.");
+                    
+                    StartCoroutine(PollGuidanceState());
                 }
                 else
                 {
@@ -161,6 +165,56 @@ public class HeadsetSync : MonoBehaviour
         }
     }
 
+    private IEnumerator PollGuidanceState()
+    {
+        while (isPaired && !string.IsNullOrEmpty(deviceToken))
+        {
+            string url = serverUrl.TrimEnd('/') + "/api/devices/guidance";
+
+            using (UnityWebRequest request = UnityWebRequest.Get(url))
+            {
+                request.SetRequestHeader(
+                    "Authorization",
+                    "Bearer " + deviceToken
+                );
+
+                request.timeout = 10;
+
+                yield return request.SendWebRequest();
+
+                if (request.result == UnityWebRequest.Result.Success)
+                {
+                    GuidanceResponse response =
+                        JsonUtility.FromJson<GuidanceResponse>(
+                            request.downloadHandler.text
+                        );
+
+                    if (response != null && sessionController != null)
+                    {
+                        if (response.active &&
+                            !sessionController.IsGuidanceActive())
+                        {
+                            sessionController.StartGuidance();
+                        }
+                        else if (!response.active &&
+                                sessionController.IsGuidanceActive())
+                        {
+                            sessionController.StopGuidance();
+                        }
+                    }
+                }
+                else
+                {
+                    Debug.LogWarning(
+                        "Guidance polling failed: " + request.error
+                    );
+                }
+            }
+
+            yield return new WaitForSeconds(2f);
+        }
+    }
+
     private void UpdateStatusDisplay()
     {
         if(connectionStatusText != null)
@@ -182,4 +236,10 @@ public class PairingClaimResponse
     public string token;
     public int deviceId;
     public int profileId;
+}
+
+[System.Serializable]
+public class GuidanceResponse
+{
+    public bool active;
 }
