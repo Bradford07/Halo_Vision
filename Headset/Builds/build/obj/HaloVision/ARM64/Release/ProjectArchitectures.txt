@@ -1,1 +1,0 @@
-C:\Users\peter\Documents\CS425_Capstone\Headset\Builds\HaloVision\HaloVision.vcxproj;arm64

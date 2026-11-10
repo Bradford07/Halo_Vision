@@ -10,6 +10,10 @@ using System.Threading;
 using Windows.Media.Capture;
 using Windows.Media.Capture.Frames;
 using Windows.Foundation;
+using Windows.Graphics.Imaging;
+using Windows.Storage.Streams;
+using System.Runtime.InteropServices.WindowsRuntime;
+using Windows.Media.MediaProperties;
 #endif
 
 public class SensorCapture : MonoBehaviour
@@ -17,14 +21,25 @@ public class SensorCapture : MonoBehaviour
     public RawImage cameraPreview;
     public TextMeshProUGUI cameraStatus;
 
+    private Texture2D cameraTexture;
+    private byte[] latestFramePixels;
+    private int frameWidth;
+    private int frameHeight;
+    private readonly object frameLock = new object();
+    private bool newFrameAvailable = false;
+    private float nextStatusUpdateTime = 0f;
     private string statusMessage = "Camera Status: Waiting...";
-    
+
     #if ENABLE_WINMD_SUPPORT
         private MediaCapture mediaCapture;
         private MediaFrameReader frameReader;
         private MediaFrameSource cameraSource;
         private bool isInitializing = false;
         private bool isShuttingDown = false;
+        private int frameCount = 0;
+        private int nullFrameCount = 0;
+        private int bitmapCount = 0;
+        private string[] supportedNv12Resolutions = new string[0];
 
         // Protects camera state shared with the Windows callback
         private readonly object cameraLock = new object();
@@ -44,10 +59,27 @@ public class SensorCapture : MonoBehaviour
     }
 
     // Update is called once per frame
+
     void Update()
     {
-        cameraStatus.text = Volatile.Read(ref statusMessage);
+        if (Time.unscaledTime < nextStatusUpdateTime)
+            return;
+
+        nextStatusUpdateTime = Time.unscaledTime + 1f;
+
+
+        #if ENABLE_WINMD_SUPPORT
+            cameraStatus.text =
+                Volatile.Read(ref statusMessage) +
+                "\nValid Frames: " + Volatile.Read(ref frameCount) +
+                "\nNull Frames: " + Volatile.Read(ref nullFrameCount) +
+                "\nSoftwareBitmaps: " + Volatile.Read(ref bitmapCount);
+        #else
+            cameraStatus.text = Volatile.Read(ref statusMessage);
+        #endif
+
     }
+
 
     // Initialize the live camera and display its status
     #if ENABLE_WINMD_SUPPORT
@@ -72,7 +104,8 @@ public class SensorCapture : MonoBehaviour
 
             var settings = new MediaCaptureInitializationSettings
             {
-                StreamingCaptureMode = StreamingCaptureMode.Video
+                StreamingCaptureMode = StreamingCaptureMode.Video,
+                MemoryPreference = MediaCaptureMemoryPreference.Cpu
             };
 
             lock(cameraLock)
@@ -129,23 +162,100 @@ public class SensorCapture : MonoBehaviour
         }
     }
 
+
+
     private void FindCameraSource()
     {
-        foreach(var source in mediaCapture.FrameSources.Values)
+        foreach (var source in mediaCapture.FrameSources.Values)
         {
-            if(source.Info.SourceKind == MediaFrameSourceKind.Color)
+            if (source.Info.SourceKind != MediaFrameSourceKind.Color)
+                continue;
+
+            foreach (var format in source.SupportedFormats)
             {
-                cameraSource = source;
-                Volatile.Write(ref statusMessage, "Camera Status: Color source found");
-                
-                CreateFrameReader();
-                
-                return;
+                if (format.VideoFormat == null)
+                    continue;
+
+                if (!string.Equals(
+                    format.Subtype,
+                    MediaEncodingSubtypes.Nv12,
+                    System.StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                if (format.VideoFormat.Width == 896 &&
+                    format.VideoFormat.Height == 504)
+                {
+                    cameraSource = source;
+
+                    Volatile.Write(
+                        ref statusMessage,
+                        "Camera Status: Selecting 896x504..."
+                    );
+
+                    try
+                    {
+                        var operation = source.SetFormatAsync(format);
+
+                        operation.Completed = (asyncOperation, status) =>
+                        {
+                            if (status == AsyncStatus.Completed)
+                            {
+                                lock (cameraLock)
+                                {
+                                    if (isShuttingDown)
+                                        return;
+                                }
+
+                                CreateFrameReader();
+                            }
+                            else
+                            {
+                                Volatile.Write(
+                                    ref statusMessage,
+                                    "Camera Error: Format selection failed"
+                                );
+                            }
+                        };
+                    }
+                    catch (System.Exception ex)
+                    {
+                        Volatile.Write(
+                            ref statusMessage,
+                            "Format Error: " + ex.Message
+                        );
+                    }
+
+                    return;
+                }
             }
         }
 
-        Volatile.Write(ref statusMessage, "Camera Error: No color source found");
+        Volatile.Write(
+            ref statusMessage,
+            "Camera Error: 896x504 NV12 not found"
+        );
     }
+
+
+
+
+    // private void FindCameraSource()
+    // {
+    //     foreach(var source in mediaCapture.FrameSources.Values)
+    //     {
+    //         if(source.Info.SourceKind == MediaFrameSourceKind.Color)
+    //         {
+    //             cameraSource = source;
+    //             Volatile.Write(ref statusMessage, "Camera Status: Color source found");
+                
+    //             CreateFrameReader();
+                
+    //             return;
+    //         }
+    //     }
+
+    //     Volatile.Write(ref statusMessage, "Camera Error: No color source found");
+    // }
 
     private void CreateFrameReader()
     {
@@ -230,15 +340,48 @@ public class SensorCapture : MonoBehaviour
         }
     }
 
-    private void OnFrameArrived(MediaFrameReader sender, MediaFrameArrivedEventArgs args)
+
+    private void OnFrameArrived(
+        MediaFrameReader sender,
+        MediaFrameArrivedEventArgs args)
     {
-        using(var frame = sender.TryAcquireLatestFrame())
+        using (var frame = sender.TryAcquireLatestFrame())
         {
-            if(frame == null)
+            if (frame == null)
+            {
+                Interlocked.Increment(ref nullFrameCount);
+                return;
+            }
+
+            Interlocked.Increment(ref frameCount);
+
+            var videoFrame = frame.VideoMediaFrame;
+
+            if (videoFrame == null)
                 return;
 
+            SoftwareBitmap bitmap = videoFrame.SoftwareBitmap;
+
+            if (bitmap == null)
+                return;
+
+            using (bitmap)
+            {
+                int count = Interlocked.Increment(ref bitmapCount);
+
+                if (count == 30)
+                {
+                    Volatile.Write(
+                        ref statusMessage,
+                        "Camera Format: " + bitmap.BitmapPixelFormat +
+                        "\nResolution: " + bitmap.PixelWidth +
+                        " x " + bitmap.PixelHeight
+                    );
+                }
+            }
         }
     }
+
 
     #endif
 
