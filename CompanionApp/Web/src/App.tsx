@@ -370,7 +370,6 @@ export default function App() {
           >
             {authMode === "login" ? "Create a guide account" : "Back to sign in"}
           </button>
-          <p className="auth-note">Your athlete profile is saved to your Halo Vision account.</p>
         </section>
       </main>
     );
@@ -462,12 +461,6 @@ export default function App() {
                     Create athlete
                   </button>
                 </section>
-              )}
-
-              {!hasProfile && (
-                <p className="screen-note">
-                  The profile stores the guidance settings used by the headset.
-                </p>
               )}
             </>
           )}
@@ -674,11 +667,6 @@ export default function App() {
                   </>
                 )}
               </section>
-              {!hasProfile && (
-                <p className="screen-note">
-                  Create and save an athlete profile before pairing.
-                </p>
-              )}
               <button
                 className="button button-primary button-full pair-button"
                 type="button"
@@ -687,9 +675,6 @@ export default function App() {
               >
                 {pairBusy ? "Creating code…" : activeCode ? "Code ready" : "Generate pairing code"}
               </button>
-              <p className="screen-note">
-                Enter this code on the headset to link it to the athlete profile.
-              </p>
             </>
           )}
 
