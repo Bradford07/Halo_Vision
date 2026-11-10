@@ -16,9 +16,6 @@ public static class DevDataSeeder
         var db = services.GetRequiredService<AppDbContext>();
         var logger = services.GetRequiredService<ILoggerFactory>().CreateLogger("DevDataSeeder");
 
-        // Build or update the database from the migrations.
-        await db.Database.MigrateAsync();
-
         // Only seed an empty database, so restarting doesn't add duplicates.
         if (await db.Users.AnyAsync())
         {

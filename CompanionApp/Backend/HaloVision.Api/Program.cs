@@ -15,7 +15,7 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 //Register the database: SQLite, using the "Default" connection string
-//(appsettings.Development.json on our PCs; the tests supply their own).
+//(appsettings.Development.json on our PCs; Azure overrides it with an app setting).
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("Default")));
 
@@ -28,6 +28,10 @@ builder.Services.AddIdentityApiEndpoints<IdentityUser>()
 //so when someone isn't signed in we answer 401/403 instead of redirecting to a login page.
 builder.Services.ConfigureApplicationCookie(options =>
 {
+    // The hosted site uses HTTPS; keep the sign-in cookie secure in production.
+    options.Cookie.SecurePolicy = builder.Environment.IsDevelopment()
+        ? CookieSecurePolicy.SameAsRequest
+        : CookieSecurePolicy.Always;
     options.Events.OnRedirectToLogin = context =>
     {
         context.Response.StatusCode = StatusCodes.Status401Unauthorized;
@@ -63,12 +67,24 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 //Build the app from that setup.
 var app = builder.Build();
 
-//On our PCs only: build the database from the migrations and add fake data if it's empty.
-if (app.Environment.IsDevelopment())
+//Create or upgrade the database on startup in every environment. In Azure, the
+//connection string points at persistent App Service storage. Only Development
+//gets the fake sample athlete account.
+using (var scope = app.Services.CreateScope())
 {
-    using var scope = app.Services.CreateScope();
-    await DevDataSeeder.SeedAsync(scope.ServiceProvider);
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    await db.Database.MigrateAsync();
+
+    if (app.Environment.IsDevelopment())
+    {
+        await DevDataSeeder.SeedAsync(scope.ServiceProvider);
+    }
 }
+
+// Serve the built React app from the same origin as the API, so browser cookies
+// and /api requests stay on one site.
+app.UseDefaultFiles();
+app.UseStaticFiles();
 
 //Check who is calling (authentication), then whether they're allowed (authorization).
 app.UseAuthentication();
