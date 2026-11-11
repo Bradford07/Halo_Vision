@@ -1,0 +1,17 @@
+{
+    "name": "HaloVision.Networking",
+    "rootNamespace": "",
+    "references": [
+        "GUID:4009d42ca2b396c448f943b3bee6e833",
+        "GUID:6055be8ebefd69e48b49212b09b47b2f"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
