@@ -32,6 +32,10 @@ public class TestAppFactory : WebApplicationFactory<Program>
     {
         _keepAlive = new SqliteConnection(_connectionString);
         _keepAlive.Open();
+
+        // Outside Development, Program.cs marks the login cookie Secure, so it is only sent over HTTPS.
+        // Use an https:// address so test clients send the athlete's cookie back like a real browser would.
+        ClientOptions.BaseAddress = new Uri("https://localhost");
     }
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
