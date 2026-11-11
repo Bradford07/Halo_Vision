@@ -35,6 +35,7 @@ public class TestAppFactory : WebApplicationFactory<Program>
     {
         _keepAlive = new SqliteConnection(_connectionString);
         _keepAlive.Open();
+
     }
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
