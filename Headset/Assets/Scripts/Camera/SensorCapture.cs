@@ -1,3 +1,6 @@
+// Author: Cal Peters
+// Finds and activates the HoloLens 2 colored camera using window API dependencies
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,7 +8,8 @@ using UnityEngine.UI;
 using TMPro;
 using System.Threading;
 
-// Enable live camera api's
+// Enable live camera APIs
+// Anything inside #if ENABLE_WIND_SUPPORT will not run outside the headset as it requires Microsoft's UWP 
 #if ENABLE_WINMD_SUPPORT
 using Windows.Media.Capture;
 using Windows.Media.Capture.Frames;
@@ -21,35 +25,36 @@ public class SensorCapture : MonoBehaviour
     public RawImage cameraPreview;
     public TextMeshProUGUI cameraStatus;
 
-    private Texture2D cameraTexture;
-    private byte[] latestFramePixels;
-    private int frameWidth;
-    private int frameHeight;
-    private readonly object frameLock = new object();
-    private bool newFrameAvailable = false;
+    // Limit status updates to once per second
     private float nextStatusUpdateTime = 0f;
     private string statusMessage = "Camera Status: Waiting...";
 
     #if ENABLE_WINMD_SUPPORT
+        // HoloLens camera capture components
         private MediaCapture mediaCapture;
         private MediaFrameReader frameReader;
         private MediaFrameSource cameraSource;
+
         private bool isInitializing = false;
         private bool isShuttingDown = false;
+
         private int frameCount = 0;
         private int nullFrameCount = 0;
         private int bitmapCount = 0;
-        private string[] supportedNv12Resolutions = new string[0];
 
-        // Protects camera state shared with the Windows callback
+        // Camera initialization and cleanup can occur on different threads
+        // Protects shared camera state from concurrent changes
         private readonly object cameraLock = new object();
     #endif
 
     // Start is called before the first frame update
     void Start()
     {
-        cameraPreview.color = Color.white;
-
+        if(cameraPreview != null)
+        {
+            cameraPreview.color = Color.white;
+        }
+        
         #if ENABLE_WINMD_SUPPORT
             InitializeCamera();
         #else
@@ -59,15 +64,18 @@ public class SensorCapture : MonoBehaviour
     }
 
     // Update is called once per frame
-
+    // UI updates here so it stays on main thread
     void Update()
-    {
-        if (Time.unscaledTime < nextStatusUpdateTime)
+    {   
+        // Refresh diagnostic text once per second instead of every frame.
+        if(Time.unscaledTime < nextStatusUpdateTime)
             return;
 
         nextStatusUpdateTime = Time.unscaledTime + 1f;
 
+        if(cameraStatus == null) return;
 
+        // Volatile.Read allows reading values from other threads safely
         #if ENABLE_WINMD_SUPPORT
             cameraStatus.text =
                 Volatile.Read(ref statusMessage) +
@@ -80,11 +88,12 @@ public class SensorCapture : MonoBehaviour
 
     }
 
-
     // Initialize the live camera and display its status
     #if ENABLE_WINMD_SUPPORT
     private void InitializeCamera()
     {
+
+        // Prevent duplicate initialization or startup druing shutdown
         lock(cameraLock)
         {
             if(isInitializing || isShuttingDown || mediaCapture != null)
@@ -105,6 +114,7 @@ public class SensorCapture : MonoBehaviour
             var settings = new MediaCaptureInitializationSettings
             {
                 StreamingCaptureMode = StreamingCaptureMode.Video,
+                // CPU memory allows inspection of SoftwareBitmap frames
                 MemoryPreference = MediaCaptureMemoryPreference.Cpu
             };
 
@@ -113,6 +123,7 @@ public class SensorCapture : MonoBehaviour
                 mediaCapture = capture;
             }
 
+            // Camera initialization is asynchronous and must finish before searching for camera sources
             var initialization = mediaCapture.InitializeAsync(settings);
 
 
@@ -124,6 +135,8 @@ public class SensorCapture : MonoBehaviour
                 lock(cameraLock)
                 {
                     isInitializing = false;
+
+                    // Check if camera was shut down while initializing
                     shouldDispose = isShuttingDown || status != AsyncStatus.Completed;
 
                     if(shouldDispose)
@@ -142,6 +155,7 @@ public class SensorCapture : MonoBehaviour
                 }
                 else
                 {
+                    // Initialization succeeded now locate a compatible color camera
                     FindCameraSource();
                 }
             };
@@ -166,43 +180,40 @@ public class SensorCapture : MonoBehaviour
 
     private void FindCameraSource()
     {
-        foreach (var source in mediaCapture.FrameSources.Values)
+        // Find a color camera source that supports the NV12 format
+        foreach(var source in mediaCapture.FrameSources.Values)
         {
-            if (source.Info.SourceKind != MediaFrameSourceKind.Color)
+            if(source.Info.SourceKind != MediaFrameSourceKind.Color)
                 continue;
 
-            foreach (var format in source.SupportedFormats)
+            foreach(var format in source.SupportedFormats)
             {
-                if (format.VideoFormat == null)
+                if(format.VideoFormat == null)
                     continue;
 
-                if (!string.Equals(
-                    format.Subtype,
-                    MediaEncodingSubtypes.Nv12,
-                    System.StringComparison.OrdinalIgnoreCase))
+                if(!string.Equals(format.Subtype, MediaEncodingSubtypes.Nv12, System.StringComparison.OrdinalIgnoreCase)) 
                     continue;
-
-                if (format.VideoFormat.Width == 896 &&
-                    format.VideoFormat.Height == 504)
+                
+                //Use smaller camera format to lessen memory size from higher resolutions
+                if(format.VideoFormat.Width == 896 && format.VideoFormat.Height == 504)
                 {
                     cameraSource = source;
 
-                    Volatile.Write(
-                        ref statusMessage,
-                        "Camera Status: Selecting 896x504..."
-                    );
+                    Volatile.Write(ref statusMessage, "Camera Status: Selecting 896x504...");
 
                     try
                     {
+                        // Configure the selected camera format asynchronously 
                         var operation = source.SetFormatAsync(format);
 
                         operation.Completed = (asyncOperation, status) =>
                         {
-                            if (status == AsyncStatus.Completed)
+                            if(status == AsyncStatus.Completed)
                             {
-                                lock (cameraLock)
+                                // Shutdown may have occured during formatting
+                                lock(cameraLock)
                                 {
-                                    if (isShuttingDown)
+                                    if(isShuttingDown)
                                         return;
                                 }
 
@@ -210,19 +221,13 @@ public class SensorCapture : MonoBehaviour
                             }
                             else
                             {
-                                Volatile.Write(
-                                    ref statusMessage,
-                                    "Camera Error: Format selection failed"
-                                );
+                                Volatile.Write(ref statusMessage, "Camera Error: Format selection failed");
                             }
                         };
                     }
                     catch (System.Exception ex)
                     {
-                        Volatile.Write(
-                            ref statusMessage,
-                            "Format Error: " + ex.Message
-                        );
+                        Volatile.Write(ref statusMessage, "Format Error: " + ex.Message);
                     }
 
                     return;
@@ -230,32 +235,8 @@ public class SensorCapture : MonoBehaviour
             }
         }
 
-        Volatile.Write(
-            ref statusMessage,
-            "Camera Error: 896x504 NV12 not found"
-        );
+        Volatile.Write(ref statusMessage,"Camera Error: 896x504 NV12 not found");
     }
-
-
-
-
-    // private void FindCameraSource()
-    // {
-    //     foreach(var source in mediaCapture.FrameSources.Values)
-    //     {
-    //         if(source.Info.SourceKind == MediaFrameSourceKind.Color)
-    //         {
-    //             cameraSource = source;
-    //             Volatile.Write(ref statusMessage, "Camera Status: Color source found");
-                
-    //             CreateFrameReader();
-                
-    //             return;
-    //         }
-    //     }
-
-    //     Volatile.Write(ref statusMessage, "Camera Error: No color source found");
-    // }
 
     private void CreateFrameReader()
     {
@@ -263,6 +244,7 @@ public class SensorCapture : MonoBehaviour
 
         try
         {
+            // Create a reader for the selected camera source
             var operation = mediaCapture.CreateFrameReaderAsync(cameraSource);
 
             operation.Completed = (asyncOperation, status) =>
@@ -281,6 +263,7 @@ public class SensorCapture : MonoBehaviour
 
                     lock(cameraLock)
                     {
+                        // Check if shutdown was initiated drung frame reader creation
                         if(isShuttingDown)
                         {
                             reader.Dispose();
@@ -290,6 +273,7 @@ public class SensorCapture : MonoBehaviour
                         frameReader = reader;
                     }
 
+                    // Register the callback that receives incoming camera frames
                     reader.FrameArrived += OnFrameArrived;
 
                     StartFrameReader(reader);
@@ -312,10 +296,12 @@ public class SensorCapture : MonoBehaviour
 
         try
         {
+            // Start receiving camera frames asynchronously
             var operation = reader.StartAsync();
 
             operation.Completed = (asyncOperation, status) =>
             {
+                // Operation succesful at API level
                 if(status != AsyncStatus.Completed)
                 {
                     Volatile.Write(ref statusMessage, "Camera Error: Failed to start reader");
@@ -324,6 +310,7 @@ public class SensorCapture : MonoBehaviour
 
                 var result = asyncOperation.GetResults();
 
+                // Frame reader started successfully
                 if(result == MediaFrameReaderStartStatus.Success)
                 {
                     Volatile.Write(ref statusMessage,"Camera Status: Reader started!");
@@ -340,15 +327,16 @@ public class SensorCapture : MonoBehaviour
         }
     }
 
-
-    private void OnFrameArrived(
-        MediaFrameReader sender,
-        MediaFrameArrivedEventArgs args)
+    // Currently verifying successful receiving of camera data
+    // Swap to displaying frames later
+    private void OnFrameArrived(MediaFrameReader sender, MediaFrameArrivedEventArgs args)
     {
+        // Get the newest available frame from the camera
         using (var frame = sender.TryAcquireLatestFrame())
         {
-            if (frame == null)
+            if(frame == null)
             {
+                // Safely increment frame counts
                 Interlocked.Increment(ref nullFrameCount);
                 return;
             }
@@ -357,25 +345,28 @@ public class SensorCapture : MonoBehaviour
 
             var videoFrame = frame.VideoMediaFrame;
 
-            if (videoFrame == null)
+            if(videoFrame == null)
                 return;
 
             SoftwareBitmap bitmap = videoFrame.SoftwareBitmap;
 
-            if (bitmap == null)
+            if(bitmap == null)
                 return;
 
+            // Check bitmap and release it after
+            // Bitmaps will be used for image rendering later
+            // Use "using" to ensure Dispose() is called after block finishes
             using (bitmap)
             {
                 int count = Interlocked.Increment(ref bitmapCount);
 
-                if (count == 30)
+                // Record the camera format after receiving 30 valid bitmaps
+                // Used to make sure bitmaps were being received
+                if(count == 30)
                 {
-                    Volatile.Write(
-                        ref statusMessage,
+                    Volatile.Write(ref statusMessage,
                         "Camera Format: " + bitmap.BitmapPixelFormat +
-                        "\nResolution: " + bitmap.PixelWidth +
-                        " x " + bitmap.PixelHeight
+                        "\nResolution: " + bitmap.PixelWidth + " x " + bitmap.PixelHeight
                     );
                 }
             }
@@ -394,6 +385,7 @@ public class SensorCapture : MonoBehaviour
 
             lock(cameraLock)
             {
+                // Prevent async camera operations from continuing during shutdown
                 isShuttingDown = true;
 
                 readerToDispose = frameReader;
@@ -408,6 +400,7 @@ public class SensorCapture : MonoBehaviour
 
             if(readerToDispose != null)
             {
+                // Stop getting frame events before releasing reader
                 readerToDispose.FrameArrived -= OnFrameArrived;
                 readerToDispose.Dispose();
             }
@@ -418,5 +411,4 @@ public class SensorCapture : MonoBehaviour
             }
         #endif
     }
-
 }

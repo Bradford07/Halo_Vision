@@ -272,6 +272,28 @@ export default function App() {
     }
   }
 
+  async function setGuidance(active: boolean) {
+    setFeedback("");
+
+    try {
+      await apiRequest("/api/guidance", {
+        method: "PUT",
+        body: JSON.stringify({ active }),
+      });
+
+      setFeedback(
+        active
+          ? "Start guidance command sent."
+          : "Stop guidance command sent."
+      );
+
+      setFeedbackError(false);
+    } catch (error) {
+      setFeedback(errorMessage(error));
+      setFeedbackError(true);
+    }
+  }
+
   async function createPairingCode() {
     setPairBusy(true);
     setFeedback("");
@@ -675,6 +697,28 @@ export default function App() {
               >
                 {pairBusy ? "Creating code…" : activeCode ? "Code ready" : "Generate pairing code"}
               </button>
+              <section className="pair-card">
+                <h2>Guidance Controls</h2>
+                <p>Control the guidance display on the paired headset.</p>
+
+                <button
+                  className="button button-primary button-full"
+                  type="button"
+                  disabled={!hasProfile}
+                  onClick={() => setGuidance(true)}
+                >
+                  Start Guidance
+                </button>
+
+                <button
+                  className="button button-secondary button-full"
+                  type="button"
+                  disabled={!hasProfile}
+                  onClick={() => setGuidance(false)}
+                >
+                  Stop Guidance
+                </button>
+              </section>
             </>
           )}
 

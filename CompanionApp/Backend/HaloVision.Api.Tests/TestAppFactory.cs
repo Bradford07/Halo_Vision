@@ -1,9 +1,12 @@
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using HaloVision.Api.Data;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -39,6 +42,12 @@ public class TestAppFactory : WebApplicationFactory<Program>
     {
         // "Testing" is not "Development", so Program.cs skips the fake-data seeder.
         builder.UseEnvironment("Testing");
+
+        // The test server uses HTTP, so allow its cookie to travel over that test connection.
+        // Production keeps the HTTPS-only cookie policy configured by Program.cs.
+        builder.ConfigureTestServices(services =>
+            services.ConfigureApplicationCookie(options =>
+                options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest));
 
         // Point the app at our in-memory database instead of halovision.db.
         builder.UseSetting("ConnectionStrings:Default", _connectionString);

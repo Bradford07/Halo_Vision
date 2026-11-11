@@ -5,7 +5,9 @@
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
         "Unity.TextMeshPro",
-        "HaloVision.Session"
+        "HaloVision.Session",
+        "HaloVision.Networking",
+        "HaloVision.Camera"
     ],
     "includePlatforms": [
         "Editor"
